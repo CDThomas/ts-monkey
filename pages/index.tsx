@@ -1,57 +1,46 @@
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
+
+const Editor = dynamic(import("../components/Editor"), { ssr: false });
+import Lexer from "../monkey/lexer/lexer";
+import * as Token from "../monkey/token/token";
 import styles from "./index.module.css";
 
-const Home = () => (
-  <div className={styles.container}>
-    <Head>
-      <title>Create Next App</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+const defaultInput = `let five = 5;
+let ten = 10;
 
-    <main>
-      <h1 className={styles.title}>
-        Welcome to <a href="https://nextjs.org">Next.js!</a>
-      </h1>
+let add = fn(x, y) {
+  x + y;
+};
 
-      <p className={styles.description}>
-        Get started by editing <code>pages/index.js</code>
-      </p>
+let result = add(five, ten);
+`;
 
-      <div className={styles.grid}>
-        <a href="https://nextjs.org/docs" className={styles.card}>
-          <h3>Documentation &rarr;</h3>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+function readTokens(lexer: Lexer, tokens: Token.Token[] = []): Token.Token[] {
+  const token = lexer.nextToken();
 
-        <a href="https://nextjs.org/learn" className={styles.card}>
-          <h3>Learn &rarr;</h3>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
+  if (token.type === Token.TokenType.EOF) return tokens;
+  return readTokens(lexer, [...tokens, token]);
+}
 
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className={styles.card}
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
+const Home = () => {
+  const [input, setInput] = React.useState(defaultInput);
+  const output = readTokens(new Lexer(input));
 
-        <a href="https://zeit.co/new/nextjs" className={styles.card}>
-          <h3>Deploy &rarr;</h3>
-          <p>
-            Instantly deploy your Next.js site to a public URL with ZEIT Now.
-          </p>
-        </a>
-      </div>
-    </main>
+  return (
+    <div>
+      <Head>
+        <title>Monkey</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-    <footer>
-      <a href="https://zeit.co" target="_blank" rel="noopener noreferrer">
-        Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-      </a>
-    </footer>
-  </div>
-);
+      <main className={styles.container}>
+        <Editor value={input} onChange={input => setInput(input)} />
+        <Editor readOnly value={JSON.stringify(output, null, 2)} />
+      </main>
+    </div>
+  );
+};
 
 export default Home;
