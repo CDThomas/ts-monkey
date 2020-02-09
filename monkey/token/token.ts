@@ -9,6 +9,16 @@ enum TokenType {
   // Operators
   Assign = "=",
   Plus = "+",
+  Minus = "-",
+  Bang = "!",
+  Asterisk = "*",
+  Slash = "/",
+
+  LT = "<",
+  GT = ">",
+
+  EQ = "==",
+  NOT_EQ = "!=",
 
   // Delimiters
   Comma = ",",
@@ -20,7 +30,12 @@ enum TokenType {
 
   // Keywords
   Function = "FUNCTION",
-  Let = "LET"
+  Let = "LET",
+  True = "TRUE",
+  False = "FALSE",
+  If = "IF",
+  Else = "ELSE",
+  Return = "RETURN"
 }
 
 export type Token = {
@@ -30,7 +45,12 @@ export type Token = {
 
 const keywords: { [keyword: string]: TokenType } = {
   fn: TokenType.Function,
-  let: TokenType.Let
+  let: TokenType.Let,
+  true: TokenType.True,
+  false: TokenType.False,
+  if: TokenType.If,
+  else: TokenType.Else,
+  return: TokenType.Return
 };
 
 function lookupIdentifier(identifier: string): TokenType {

@@ -8,7 +8,18 @@ let add = fn(x, y) {
   x + y;
 };
 let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+
+if (5 < 10) {
+  return true;
+} else {
+  return false;
+}
+10 == 10;
+10 != 9;
 `;
+
   const tests: [Token.TokenType, string][] = [
     [Token.TokenType.Let, "let"],
     [Token.TokenType.Ident, "five"],
@@ -45,6 +56,43 @@ let result = add(five, ten);
     [Token.TokenType.Comma, ","],
     [Token.TokenType.Ident, "ten"],
     [Token.TokenType.RParen, ")"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.Bang, "!"],
+    [Token.TokenType.Minus, "-"],
+    [Token.TokenType.Slash, "/"],
+    [Token.TokenType.Asterisk, "*"],
+    [Token.TokenType.Int, "5"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.Int, "5"],
+    [Token.TokenType.LT, "<"],
+    [Token.TokenType.Int, "10"],
+    [Token.TokenType.GT, ">"],
+    [Token.TokenType.Int, "5"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.If, "if"],
+    [Token.TokenType.LParen, "("],
+    [Token.TokenType.Int, "5"],
+    [Token.TokenType.LT, "<"],
+    [Token.TokenType.Int, "10"],
+    [Token.TokenType.RParen, ")"],
+    [Token.TokenType.LBrace, "{"],
+    [Token.TokenType.Return, "return"],
+    [Token.TokenType.True, "true"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.RBrace, "}"],
+    [Token.TokenType.Else, "else"],
+    [Token.TokenType.LBrace, "{"],
+    [Token.TokenType.Return, "return"],
+    [Token.TokenType.False, "false"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.RBrace, "}"],
+    [Token.TokenType.Int, "10"],
+    [Token.TokenType.EQ, "=="],
+    [Token.TokenType.Int, "10"],
+    [Token.TokenType.Semicolon, ";"],
+    [Token.TokenType.Int, "10"],
+    [Token.TokenType.NOT_EQ, "!="],
+    [Token.TokenType.Int, "9"],
     [Token.TokenType.Semicolon, ";"],
     [Token.TokenType.EOF, ""]
   ];

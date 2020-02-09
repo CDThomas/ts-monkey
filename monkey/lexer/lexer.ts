@@ -28,7 +28,42 @@ export default class Lexer {
 
     switch (this.ch) {
       case "=":
-        token = this.newToken(Token.TokenType.Assign, this.ch);
+        if (this.peekChar() == "=") {
+          const ch = this.ch;
+          this.readChar();
+          const literal = ch + this.ch;
+          token = this.newToken(Token.TokenType.EQ, literal);
+        } else {
+          token = this.newToken(Token.TokenType.Assign, this.ch);
+        }
+        break;
+      case "+":
+        token = this.newToken(Token.TokenType.Plus, this.ch);
+        break;
+      case "-":
+        token = this.newToken(Token.TokenType.Minus, this.ch);
+        break;
+      case "!":
+        if (this.peekChar() == "=") {
+          const ch = this.ch;
+          this.readChar();
+          const literal = ch + this.ch;
+          token = this.newToken(Token.TokenType.NOT_EQ, literal);
+        } else {
+          token = this.newToken(Token.TokenType.Bang, this.ch);
+        }
+        break;
+      case "/":
+        token = this.newToken(Token.TokenType.Slash, this.ch);
+        break;
+      case "*":
+        token = this.newToken(Token.TokenType.Asterisk, this.ch);
+        break;
+      case "<":
+        token = this.newToken(Token.TokenType.LT, this.ch);
+        break;
+      case ">":
+        token = this.newToken(Token.TokenType.GT, this.ch);
         break;
       case ";":
         token = this.newToken(Token.TokenType.Semicolon, this.ch);
@@ -107,5 +142,12 @@ export default class Lexer {
 
   private isDigit(ch: string): boolean {
     return "0" <= ch && ch <= "9";
+  }
+
+  private peekChar(): string | null {
+    if (this.readPosition >= this.input.length) {
+      return null;
+    }
+    return this.input[this.readPosition];
   }
 }
