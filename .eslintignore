@@ -6,6 +6,6 @@ dist
 .next
 # don't lint nyc coverage output
 coverage
-# dont link jest config
+# don't lint jest config
 jest.config.js
 config/jest
