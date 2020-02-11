@@ -2,8 +2,8 @@ import * as Token from "../token/token";
 
 export default class Lexer {
   input: string;
-  position: number = 0;
-  readPosition: number = 0;
+  position = 0;
+  readPosition = 0;
   ch: string | null = "";
 
   constructor(input: string) {
@@ -11,7 +11,7 @@ export default class Lexer {
     this.readChar();
   }
 
-  readChar() {
+  readChar(): void {
     if (this.readPosition >= this.input.length) {
       this.ch = null;
     } else {
@@ -77,9 +77,6 @@ export default class Lexer {
       case ",":
         token = this.newToken(Token.TokenType.Comma, this.ch);
         break;
-      case "+":
-        token = this.newToken(Token.TokenType.Plus, this.ch);
-        break;
       case "{":
         token = this.newToken(Token.TokenType.LBrace, this.ch);
         break;
@@ -121,7 +118,7 @@ export default class Lexer {
     return ("a" <= ch && ch <= "z") || ("A" <= ch && ch <= "Z") || ch == "_";
   }
 
-  private skipWhitespace() {
+  private skipWhitespace(): void {
     while (
       this.ch === " " ||
       this.ch === "\t" ||
