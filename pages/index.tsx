@@ -24,7 +24,7 @@ function readTokens(lexer: Lexer, tokens: Token.Token[] = []): Token.Token[] {
   return readTokens(lexer, [...tokens, token]);
 }
 
-const Home = () => {
+function Home(): React.ReactElement {
   const [input, setInput] = React.useState(defaultInput);
   const output = readTokens(new Lexer(input));
 
@@ -36,11 +36,11 @@ const Home = () => {
       </Head>
 
       <main className={styles.container}>
-        <Editor value={input} onChange={input => setInput(input)} />
+        <Editor value={input} onChange={(input): void => setInput(input)} />
         <Editor readOnly value={JSON.stringify(output, null, 2)} />
       </main>
     </div>
   );
-};
+}
 
 export default Home;

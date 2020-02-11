@@ -1,12 +1,14 @@
 {
   "name": "with-jest",
   "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "test": "jest --watch",
-    "test:ci": "jest --ci"
+    "test:ci": "jest --ci",
+    "lint": "yarn eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "codemirror": "^5.51.0",
@@ -20,7 +22,11 @@
     "@testing-library/react": "^9.4.0",
     "@types/node": "^13.7.0",
     "@types/react": "^16.9.19",
+    "@typescript-eslint/eslint-plugin": "^2.19.2",
+    "@typescript-eslint/parser": "^2.19.2",
     "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.18.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.1.0",
     "react-test-renderer": "^16.12.0",
