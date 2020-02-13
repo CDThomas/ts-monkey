@@ -1,6 +1,6 @@
 import Parser from "./parser";
-import Lexer from "../lexer/lexer";
-import * as AST from "../ast/ast";
+import Lexer from "./lexer";
+import * as AST from "./ast";
 
 function assertLetStatement(
   statement: AST.Statement,
