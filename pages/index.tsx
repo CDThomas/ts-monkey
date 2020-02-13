@@ -3,8 +3,8 @@ import Head from "next/head";
 import React from "react";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
-import Lexer from "../monkey/lexer/lexer";
-import * as Token from "../monkey/token/token";
+import Lexer from "../language/lexer/lexer";
+import * as Token from "../language/token/token";
 import styles from "./index.module.css";
 
 const defaultInput = `let five = 5;

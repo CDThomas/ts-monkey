@@ -1,5 +1,5 @@
 import * as Token from "../token/token";
-import Lexer from "../lexer/lexer";
+import Lexer from "./lexer";
 
 test("nextToken", () => {
   const input = `let five = 5;
