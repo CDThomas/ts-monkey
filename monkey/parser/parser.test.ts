@@ -6,11 +6,9 @@ function assertLetStatement(
   statement: AST.Statement,
   expectedName: string
 ): void {
-  expect(statement.tokenLiteral()).toBe("let");
-  expect(statement).toBeInstanceOf(AST.LetStatement);
-  if (statement instanceof AST.LetStatement) {
+  expect(statement.kind).toBe(AST.ASTKind.Let);
+  if (statement.kind === AST.ASTKind.Let) {
     expect(statement.name.value).toBe(expectedName);
-    expect(statement.name.tokenLiteral()).toBe(expectedName);
   }
 }
 

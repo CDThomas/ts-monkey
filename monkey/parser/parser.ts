@@ -14,17 +14,19 @@ class Parser {
   }
 
   parseProgram(): ast.Program {
-    const program = new ast.Program();
-
+    const statements: ast.Statement[] = [];
     while (this.curToken.type !== token.TokenType.EOF) {
       const statement = this.parseStatement();
       if (statement) {
-        program.statements.push(statement);
+        statements.push(statement);
       }
       this.nextToken();
     }
 
-    return program;
+    return {
+      kind: ast.ASTKind.Program,
+      statements
+    };
   }
 
   private nextToken(): void {
@@ -42,13 +44,14 @@ class Parser {
   }
 
   private parseLetStatement(): ast.LetStatement | null {
-    const statementToken = this.curToken;
-
     if (!this.expectPeek(token.TokenType.Ident)) {
       return null;
     }
 
-    const name = new ast.Identifier(this.curToken, this.curToken.literal);
+    const name: ast.Identifier = {
+      kind: ast.ASTKind.Identifier,
+      value: this.curToken.literal
+    };
 
     if (!this.expectPeek(token.TokenType.Assign)) {
       return null;
@@ -59,7 +62,10 @@ class Parser {
       this.nextToken();
     }
 
-    return new ast.LetStatement(statementToken, name);
+    return {
+      kind: ast.ASTKind.Let,
+      name
+    };
   }
 
   private curTokenIs(tokenType: token.TokenType): boolean {
