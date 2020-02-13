@@ -1,4 +1,4 @@
-enum TokenType {
+export enum TokenType {
   Illegal = "ILLEGAL",
   EOF = "EOF",
 
@@ -53,8 +53,6 @@ const keywords: { [keyword: string]: TokenType } = {
   return: TokenType.Return
 };
 
-function lookupIdentifier(identifier: string): TokenType {
+export function lookupIdentifier(identifier: string): TokenType {
   return keywords[identifier] || TokenType.Ident;
 }
-
-export { lookupIdentifier, TokenType };
