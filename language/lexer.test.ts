@@ -1,4 +1,4 @@
-import { TokenType } from "../token/token";
+import { TokenType } from "./token";
 import Lexer from "./lexer";
 
 test("nextToken", () => {

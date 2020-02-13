@@ -1,12 +1,6 @@
-import {
-  ASTKind,
-  Identifier,
-  LetStatement,
-  Program,
-  Statement
-} from "../ast/ast";
-import Lexer from "../lexer/lexer";
-import { Token, TokenType } from "../token/token";
+import { ASTKind, Identifier, LetStatement, Program, Statement } from "./ast";
+import Lexer from "./lexer";
+import { Token, TokenType } from "./token";
 
 class Parser {
   lexer: Lexer;
