@@ -1,4 +1,4 @@
-import * as Token from "../token/token";
+import { Token, TokenType, lookupIdentifier } from "../token/token";
 
 export default class Lexer {
   input: string;
@@ -21,8 +21,8 @@ export default class Lexer {
     this.readPosition += 1;
   }
 
-  nextToken(): Token.Token {
-    let token: Token.Token;
+  nextToken(): Token {
+    let token: Token;
 
     this.skipWhitespace();
 
@@ -32,68 +32,68 @@ export default class Lexer {
           const ch = this.ch;
           this.readChar();
           const literal = ch + this.ch;
-          token = this.newToken(Token.TokenType.EQ, literal);
+          token = this.newToken(TokenType.EQ, literal);
         } else {
-          token = this.newToken(Token.TokenType.Assign, this.ch);
+          token = this.newToken(TokenType.Assign, this.ch);
         }
         break;
       case "+":
-        token = this.newToken(Token.TokenType.Plus, this.ch);
+        token = this.newToken(TokenType.Plus, this.ch);
         break;
       case "-":
-        token = this.newToken(Token.TokenType.Minus, this.ch);
+        token = this.newToken(TokenType.Minus, this.ch);
         break;
       case "!":
         if (this.peekChar() == "=") {
           const ch = this.ch;
           this.readChar();
           const literal = ch + this.ch;
-          token = this.newToken(Token.TokenType.NOT_EQ, literal);
+          token = this.newToken(TokenType.NOT_EQ, literal);
         } else {
-          token = this.newToken(Token.TokenType.Bang, this.ch);
+          token = this.newToken(TokenType.Bang, this.ch);
         }
         break;
       case "/":
-        token = this.newToken(Token.TokenType.Slash, this.ch);
+        token = this.newToken(TokenType.Slash, this.ch);
         break;
       case "*":
-        token = this.newToken(Token.TokenType.Asterisk, this.ch);
+        token = this.newToken(TokenType.Asterisk, this.ch);
         break;
       case "<":
-        token = this.newToken(Token.TokenType.LT, this.ch);
+        token = this.newToken(TokenType.LT, this.ch);
         break;
       case ">":
-        token = this.newToken(Token.TokenType.GT, this.ch);
+        token = this.newToken(TokenType.GT, this.ch);
         break;
       case ";":
-        token = this.newToken(Token.TokenType.Semicolon, this.ch);
+        token = this.newToken(TokenType.Semicolon, this.ch);
         break;
       case "(":
-        token = this.newToken(Token.TokenType.LParen, this.ch);
+        token = this.newToken(TokenType.LParen, this.ch);
         break;
       case ")":
-        token = this.newToken(Token.TokenType.RParen, this.ch);
+        token = this.newToken(TokenType.RParen, this.ch);
         break;
       case ",":
-        token = this.newToken(Token.TokenType.Comma, this.ch);
+        token = this.newToken(TokenType.Comma, this.ch);
         break;
       case "{":
-        token = this.newToken(Token.TokenType.LBrace, this.ch);
+        token = this.newToken(TokenType.LBrace, this.ch);
         break;
       case "}":
-        token = this.newToken(Token.TokenType.RBrace, this.ch);
+        token = this.newToken(TokenType.RBrace, this.ch);
         break;
       case null:
-        token = this.newToken(Token.TokenType.EOF, "");
+        token = this.newToken(TokenType.EOF, "");
         break;
       default:
         if (this.isLetter(this.ch)) {
           const literal = this.readIdentifier();
-          return this.newToken(Token.lookupIdentifier(literal), literal);
+          return this.newToken(lookupIdentifier(literal), literal);
         } else if (this.isDigit(this.ch)) {
-          return this.newToken(Token.TokenType.Int, this.readNumber());
+          return this.newToken(TokenType.Int, this.readNumber());
         } else {
-          token = this.newToken(Token.TokenType.Illegal, this.ch);
+          token = this.newToken(TokenType.Illegal, this.ch);
         }
     }
 
@@ -101,7 +101,7 @@ export default class Lexer {
     return token;
   }
 
-  private newToken(tokenType: Token.TokenType, ch: string): Token.Token {
+  private newToken(tokenType: TokenType, ch: string): Token {
     return { type: tokenType, literal: ch };
   }
 

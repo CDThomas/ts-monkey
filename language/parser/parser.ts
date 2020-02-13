@@ -1,11 +1,17 @@
-import * as ast from "../ast/ast";
+import {
+  ASTKind,
+  Identifier,
+  LetStatement,
+  Program,
+  Statement
+} from "../ast/ast";
 import Lexer from "../lexer/lexer";
-import * as token from "../token/token";
+import { Token, TokenType } from "../token/token";
 
 class Parser {
   lexer: Lexer;
-  curToken: token.Token;
-  peekToken: token.Token;
+  curToken: Token;
+  peekToken: Token;
 
   constructor(lexer: Lexer) {
     this.lexer = lexer;
@@ -13,9 +19,9 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
   }
 
-  parseProgram(): ast.Program {
-    const statements: ast.Statement[] = [];
-    while (this.curToken.type !== token.TokenType.EOF) {
+  parseProgram(): Program {
+    const statements: Statement[] = [];
+    while (this.curToken.type !== TokenType.EOF) {
       const statement = this.parseStatement();
       if (statement) {
         statements.push(statement);
@@ -24,7 +30,7 @@ class Parser {
     }
 
     return {
-      kind: ast.ASTKind.Program,
+      kind: ASTKind.Program,
       statements
     };
   }
@@ -34,49 +40,49 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
   }
 
-  private parseStatement(): ast.Statement | null {
+  private parseStatement(): Statement | null {
     switch (this.curToken.type) {
-      case token.TokenType.Let:
+      case TokenType.Let:
         return this.parseLetStatement();
       default:
         return null;
     }
   }
 
-  private parseLetStatement(): ast.LetStatement | null {
-    if (!this.expectPeek(token.TokenType.Ident)) {
+  private parseLetStatement(): LetStatement | null {
+    if (!this.expectPeek(TokenType.Ident)) {
       return null;
     }
 
-    const name: ast.Identifier = {
-      kind: ast.ASTKind.Identifier,
+    const name: Identifier = {
+      kind: ASTKind.Identifier,
       value: this.curToken.literal
     };
 
-    if (!this.expectPeek(token.TokenType.Assign)) {
+    if (!this.expectPeek(TokenType.Assign)) {
       return null;
     }
 
     // TODO: don't skip expressions
-    while (!this.curTokenIs(token.TokenType.Semicolon)) {
+    while (!this.curTokenIs(TokenType.Semicolon)) {
       this.nextToken();
     }
 
     return {
-      kind: ast.ASTKind.Let,
+      kind: ASTKind.Let,
       name
     };
   }
 
-  private curTokenIs(tokenType: token.TokenType): boolean {
+  private curTokenIs(tokenType: TokenType): boolean {
     return this.curToken.type === tokenType;
   }
 
-  private peekTokenIs(tokenType: token.TokenType): boolean {
+  private peekTokenIs(tokenType: TokenType): boolean {
     return this.peekToken.type === tokenType;
   }
 
-  private expectPeek(tokenType: token.TokenType): boolean {
+  private expectPeek(tokenType: TokenType): boolean {
     if (this.peekTokenIs(tokenType)) {
       this.nextToken();
       return true;
