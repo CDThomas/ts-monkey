@@ -1,21 +1,11 @@
-# Next.js + Jest
+# ts-monkey
 
-This example shows how to configure Jest to work with Next.js.
+A TypeScript implementation of the [monkey language](https://monkeylang.org/) along with an in-browser editor, interpreter, and AST explorer.
 
-This includes Next.js' built-in support for Global CSS, CSS Modules, and TypeScript!
+## Structure
 
-## How to Use
+Currently, all files (for both the in-browser editor and core language) live in this project. This is for ease while building out the basic feature-set for the editor and language.
 
-Quickly get started using [Create Next App](https://github.com/zeit/next.js/tree/canary/packages/create-next-app#readme)!
+This project uses [Next.js](https://nextjs.org/). Source code for the Monkey interpreter lives in `language/` and the rest of the files follow conventions for [Next.js applications](https://nextjs.org/docs/getting-started).
 
-In your terminal, run the following command:
-
-```bash
-npx create-next-app --example with-jest
-```
-
-## Run Jest Tests
-
-```bash
-npm test
-```
+Eventually the core language (source code for Monkey interpreter) will most likely be moved into its own package.
