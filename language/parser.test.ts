@@ -12,6 +12,17 @@ function assertLetStatement(
   }
 }
 
+function checkParserErrors(parser: Parser): void {
+  if (parser.errors.length === 0) {
+    return;
+  }
+
+  throw new Error(
+    `parser has ${parser.errors.length} errors.\n` +
+      parser.errors.map(message => `parser error: ${message}\n`).join("")
+  );
+}
+
 test("let statements", () => {
   const input = `
   let x = 5;
@@ -23,6 +34,7 @@ test("let statements", () => {
   const parser = new Parser(lexer);
 
   const program = parser.parseProgram();
+  checkParserErrors(parser);
 
   expect(program).not.toBe(null);
   expect(program.statements).toHaveLength(3);
