@@ -1,16 +1,6 @@
 import Parser from "./parser";
 import Lexer from "./lexer";
-import * as AST from "./ast";
-
-function assertLetStatement(
-  statement: AST.Statement,
-  expectedName: string
-): void {
-  expect(statement.kind).toBe(AST.ASTKind.Let);
-  if (statement.kind === AST.ASTKind.Let) {
-    expect(statement.name.value).toBe(expectedName);
-  }
-}
+import { ASTKind, Program } from "./ast";
 
 function checkParserErrors(parser: Parser): void {
   if (parser.errors.length === 0) {
@@ -23,24 +13,49 @@ function checkParserErrors(parser: Parser): void {
   );
 }
 
-test("let statements", () => {
-  const input = `
-  let x = 5;
-  let y = 10;
-  let foobar = 838383;
-  `;
-
+function parse(input: string): Program {
   const lexer = new Lexer(input);
   const parser = new Parser(lexer);
-
-  const program = parser.parseProgram();
   checkParserErrors(parser);
+  return parser.parseProgram();
+}
 
-  expect(program).not.toBe(null);
-  expect(program.statements).toHaveLength(3);
+describe("parsing", () => {
+  test("let statements", () => {
+    const input = `
+    let x = 5;
+    let y = 10;
+    let foobar = 838383;
+    `;
 
-  ["x", "y", "foobar"].forEach((expectedName, i) => {
-    const statement = program.statements[i];
-    assertLetStatement(statement, expectedName);
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "x" } },
+        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "y" } },
+        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "foobar" } }
+      ]
+    });
+  });
+
+  test("return statements", () => {
+    const input = `
+    return 5;
+    return 10;
+    return 993322;
+    `;
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        { kind: ASTKind.Return },
+        { kind: ASTKind.Return },
+        { kind: ASTKind.Return }
+      ]
+    });
   });
 });

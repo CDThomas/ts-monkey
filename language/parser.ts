@@ -1,4 +1,11 @@
-import { ASTKind, Identifier, LetStatement, Program, Statement } from "./ast";
+import {
+  ASTKind,
+  Identifier,
+  LetStatement,
+  Program,
+  ReturnStatment,
+  Statement
+} from "./ast";
 import Lexer from "./lexer";
 import { Token, TokenType } from "./token";
 
@@ -40,6 +47,8 @@ class Parser {
     switch (this.curToken.type) {
       case TokenType.Let:
         return this.parseLetStatement();
+      case TokenType.Return:
+        return this.parseReturnStatement();
       default:
         return null;
     }
@@ -67,6 +76,19 @@ class Parser {
     return {
       kind: ASTKind.Let,
       name
+    };
+  }
+
+  private parseReturnStatement(): ReturnStatment {
+    this.nextToken();
+
+    // TODO: don't skip expressions
+    while (!this.curTokenIs(TokenType.Semicolon)) {
+      this.nextToken();
+    }
+
+    return {
+      kind: ASTKind.Return
     };
   }
 
