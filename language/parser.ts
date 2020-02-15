@@ -26,7 +26,6 @@ enum Precedence {
 
 class Parser {
   lexer: Lexer;
-  errors: string[];
   curToken: Token;
   peekToken: Token;
   // TODO: Remove Partial here once all fn's are implemented
@@ -35,7 +34,6 @@ class Parser {
 
   constructor(lexer: Lexer) {
     this.lexer = lexer;
-    this.errors = [];
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
 
@@ -78,18 +76,14 @@ class Parser {
   }
 
   private parseLetStatement(): LetStatement | null {
-    if (!this.expectPeek(TokenType.Ident)) {
-      return null;
-    }
+    this.expectPeek(TokenType.Ident);
 
     const name: Identifier = {
       kind: ASTKind.Identifier,
       value: this.curToken.literal
     };
 
-    if (!this.expectPeek(TokenType.Assign)) {
-      return null;
-    }
+    this.expectPeek(TokenType.Assign);
 
     // TODO: don't skip expressions
     while (!this.curTokenIs(TokenType.Semicolon)) {
@@ -123,19 +117,14 @@ class Parser {
     return this.peekToken.type === tokenType;
   }
 
-  private expectPeek(tokenType: TokenType): boolean {
-    if (this.peekTokenIs(tokenType)) {
-      this.nextToken();
-      return true;
-    } else {
-      this.peekError(tokenType);
-      return false;
+  private expectPeek(tokenType: TokenType): void {
+    if (!this.peekTokenIs(tokenType)) {
+      throw new Error(
+        `expected next token to be ${tokenType}, got ${this.peekToken.type} instead`
+      );
     }
-  }
 
-  private peekError(token: TokenType): void {
-    const message = `expected next token to be ${token}, got ${this.peekToken.type} instead`;
-    this.errors.push(message);
+    this.nextToken();
   }
 
   private parseExpressionStatement(): ExpressionStatement {
