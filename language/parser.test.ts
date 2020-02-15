@@ -58,4 +58,23 @@ describe("parsing", () => {
       ]
     });
   });
+
+  test("identifier expressions", () => {
+    const input = "foobar";
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.Expression,
+          expression: {
+            kind: ASTKind.Identifier,
+            value: "foobar"
+          }
+        }
+      ]
+    });
+  });
 });

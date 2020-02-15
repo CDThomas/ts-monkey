@@ -1,5 +1,7 @@
 import {
   ASTKind,
+  Expression,
+  ExpressionStatement,
   Identifier,
   LetStatement,
   Program,
@@ -9,17 +11,38 @@ import {
 import Lexer from "./lexer";
 import { Token, TokenType } from "./token";
 
+type PrefixParseFunction = () => Expression;
+type InfixParseFunction = (epxression: Expression) => Expression;
+
+enum Precedence {
+  Lowest,
+  Equals,
+  LessGreater,
+  Sum,
+  Product,
+  Prefix,
+  Call
+}
+
 class Parser {
   lexer: Lexer;
+  errors: string[];
   curToken: Token;
   peekToken: Token;
-  errors: string[];
+  // TODO: Remove Partial here once all fn's are implemented
+  prefixParseFunctions: Partial<Record<TokenType, PrefixParseFunction>>;
+  infixParseFunctions: Partial<Record<TokenType, InfixParseFunction>>;
 
   constructor(lexer: Lexer) {
     this.lexer = lexer;
     this.errors = [];
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
+
+    this.prefixParseFunctions = {
+      [TokenType.Ident]: this.parseIdentifier.bind(this)
+    };
+    this.infixParseFunctions = {};
   }
 
   parseProgram(): Program {
@@ -50,7 +73,7 @@ class Parser {
       case TokenType.Return:
         return this.parseReturnStatement();
       default:
-        return null;
+        return this.parseExpressionStatement();
     }
   }
 
@@ -113,6 +136,40 @@ class Parser {
   private peekError(token: TokenType): void {
     const message = `expected next token to be ${token}, got ${this.peekToken.type} instead`;
     this.errors.push(message);
+  }
+
+  private parseExpressionStatement(): ExpressionStatement {
+    const expression = this.parseExpression(Precedence.Lowest);
+
+    if (this.peekTokenIs(TokenType.Semicolon)) {
+      this.nextToken();
+    }
+
+    return {
+      kind: ASTKind.Expression,
+      expression
+    };
+  }
+
+  // TODO: remove eslint-disable once arg is used
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private parseExpression(_precedence: Precedence): Expression {
+    const prefix = this.prefixParseFunctions[this.curToken.type];
+
+    if (!prefix) {
+      throw new Error(`No prefix parse function for ${this.curToken.type}`);
+    }
+
+    const leftExpression = prefix();
+
+    return leftExpression;
+  }
+
+  private parseIdentifier(): Identifier {
+    return {
+      kind: ASTKind.Identifier,
+      value: this.curToken.literal
+    };
   }
 }
 
