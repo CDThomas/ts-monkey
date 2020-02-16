@@ -12,7 +12,7 @@ import Lexer from "./lexer";
 import { Token, TokenType } from "./token";
 
 type PrefixParseFunction = () => Expression;
-type InfixParseFunction = (epxression: Expression) => Expression;
+type InfixParseFunction = (expression: Expression) => Expression;
 
 enum Precedence {
   Lowest,
