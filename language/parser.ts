@@ -10,7 +10,7 @@ import {
   Statement
 } from "./ast";
 import Lexer from "./lexer";
-import { Token, TokenType } from "./token";
+import { Token, TokenKind } from "./token";
 
 type PrefixParseFunction = () => Expression;
 type InfixParseFunction = (expression: Expression) => Expression;
@@ -30,8 +30,8 @@ class Parser {
   curToken: Token;
   peekToken: Token;
   // TODO: Remove Partial here once all fn's are implemented
-  prefixParseFunctions: Partial<Record<TokenType, PrefixParseFunction>>;
-  infixParseFunctions: Partial<Record<TokenType, InfixParseFunction>>;
+  prefixParseFunctions: Partial<Record<TokenKind, PrefixParseFunction>>;
+  infixParseFunctions: Partial<Record<TokenKind, InfixParseFunction>>;
 
   constructor(lexer: Lexer) {
     this.lexer = lexer;
@@ -39,15 +39,15 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
 
     this.prefixParseFunctions = {
-      [TokenType.Ident]: this.parseIdentifier.bind(this),
-      [TokenType.Integer]: this.parseInteger.bind(this)
+      [TokenKind.Ident]: this.parseIdentifier.bind(this),
+      [TokenKind.Integer]: this.parseInteger.bind(this)
     };
     this.infixParseFunctions = {};
   }
 
   parseProgram(): Program {
     const statements: Statement[] = [];
-    while (this.curToken.type !== TokenType.EOF) {
+    while (this.curToken.kind !== TokenKind.EOF) {
       const statement = this.parseStatement();
       if (statement) {
         statements.push(statement);
@@ -67,10 +67,10 @@ class Parser {
   }
 
   private parseStatement(): Statement | null {
-    switch (this.curToken.type) {
-      case TokenType.Let:
+    switch (this.curToken.kind) {
+      case TokenKind.Let:
         return this.parseLetStatement();
-      case TokenType.Return:
+      case TokenKind.Return:
         return this.parseReturnStatement();
       default:
         return this.parseExpressionStatement();
@@ -78,17 +78,17 @@ class Parser {
   }
 
   private parseLetStatement(): LetStatement | null {
-    this.expectPeek(TokenType.Ident);
+    this.expectPeek(TokenKind.Ident);
 
     const name: Identifier = {
       kind: ASTKind.Identifier,
       value: this.curToken.literal
     };
 
-    this.expectPeek(TokenType.Assign);
+    this.expectPeek(TokenKind.Assign);
 
     // TODO: don't skip expressions
-    while (!this.curTokenIs(TokenType.Semicolon)) {
+    while (!this.curTokenIs(TokenKind.Semicolon)) {
       this.nextToken();
     }
 
@@ -102,7 +102,7 @@ class Parser {
     this.nextToken();
 
     // TODO: don't skip expressions
-    while (!this.curTokenIs(TokenType.Semicolon)) {
+    while (!this.curTokenIs(TokenKind.Semicolon)) {
       this.nextToken();
     }
 
@@ -111,18 +111,18 @@ class Parser {
     };
   }
 
-  private curTokenIs(tokenType: TokenType): boolean {
-    return this.curToken.type === tokenType;
+  private curTokenIs(tokenType: TokenKind): boolean {
+    return this.curToken.kind === tokenType;
   }
 
-  private peekTokenIs(tokenType: TokenType): boolean {
-    return this.peekToken.type === tokenType;
+  private peekTokenIs(tokenType: TokenKind): boolean {
+    return this.peekToken.kind === tokenType;
   }
 
-  private expectPeek(tokenType: TokenType): void {
+  private expectPeek(tokenType: TokenKind): void {
     if (!this.peekTokenIs(tokenType)) {
       throw new Error(
-        `expected next token to be ${tokenType}, got ${this.peekToken.type} instead`
+        `expected next token to be ${tokenType}, got ${this.peekToken.kind} instead`
       );
     }
 
@@ -132,7 +132,7 @@ class Parser {
   private parseExpressionStatement(): ExpressionStatement {
     const expression = this.parseExpression(Precedence.Lowest);
 
-    if (this.peekTokenIs(TokenType.Semicolon)) {
+    if (this.peekTokenIs(TokenKind.Semicolon)) {
       this.nextToken();
     }
 
@@ -145,10 +145,10 @@ class Parser {
   // TODO: remove eslint-disable once arg is used
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private parseExpression(_precedence: Precedence): Expression {
-    const prefix = this.prefixParseFunctions[this.curToken.type];
+    const prefix = this.prefixParseFunctions[this.curToken.kind];
 
     if (!prefix) {
-      throw new Error(`No prefix parse function for ${this.curToken.type}`);
+      throw new Error(`No prefix parse function for ${this.curToken.kind}`);
     }
 
     const leftExpression = prefix();

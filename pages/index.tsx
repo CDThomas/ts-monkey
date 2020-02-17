@@ -4,7 +4,7 @@ import React from "react";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
 import Lexer from "../language/lexer";
-import { Token, TokenType } from "../language/token";
+import { Token, TokenKind } from "../language/token";
 import styles from "./index.module.css";
 
 const defaultInput = `let five = 5;
@@ -20,7 +20,7 @@ let result = add(five, ten);
 function readTokens(lexer: Lexer, tokens: Token[] = []): Token[] {
   const token = lexer.nextToken();
 
-  if (token.type === TokenType.EOF) return tokens;
+  if (token.kind === TokenKind.EOF) return tokens;
   return readTokens(lexer, [...tokens, token]);
 }
 
