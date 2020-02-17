@@ -91,7 +91,7 @@ export default class Lexer {
           const literal = this.readIdentifier();
           return this.newToken(lookupIdentifier(literal), literal);
         } else if (this.isDigit(this.ch)) {
-          return this.newToken(TokenType.Int, this.readNumber());
+          return this.newToken(TokenType.Integer, this.readNumber());
         } else {
           token = this.newToken(TokenType.Illegal, this.ch);
         }

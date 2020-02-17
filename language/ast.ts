@@ -1,6 +1,7 @@
 export enum ASTKind {
   Expression = "EXPRESSION",
   Identifier = "IDENTIFIER",
+  Integer = "INTEGER",
   Let = "LET",
   Program = "PROGRAM",
   Return = "RETURN"
@@ -8,7 +9,7 @@ export enum ASTKind {
 
 export type Node = Program | Statement | Expression;
 export type Statement = ExpressionStatement | LetStatement | ReturnStatment;
-export type Expression = Identifier;
+export type Expression = Identifier | Integer;
 
 export type Program = {
   kind: ASTKind.Program;
@@ -38,4 +39,9 @@ export type ReturnStatment = {
 export type Identifier = {
   kind: ASTKind.Identifier;
   value: string;
+};
+
+export type Integer = {
+  kind: ASTKind.Integer;
+  value: number;
 };

@@ -65,4 +65,23 @@ describe("parsing", () => {
       ]
     });
   });
+
+  test("integer literal expressions", () => {
+    const input = "5;";
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.Expression,
+          expression: {
+            kind: ASTKind.Integer,
+            value: 5
+          }
+        }
+      ]
+    });
+  });
 });

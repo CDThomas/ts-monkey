@@ -3,6 +3,7 @@ import {
   Expression,
   ExpressionStatement,
   Identifier,
+  Integer,
   LetStatement,
   Program,
   ReturnStatment,
@@ -38,7 +39,8 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
 
     this.prefixParseFunctions = {
-      [TokenType.Ident]: this.parseIdentifier.bind(this)
+      [TokenType.Ident]: this.parseIdentifier.bind(this),
+      [TokenType.Integer]: this.parseInteger.bind(this)
     };
     this.infixParseFunctions = {};
   }
@@ -158,6 +160,13 @@ class Parser {
     return {
       kind: ASTKind.Identifier,
       value: this.curToken.literal
+    };
+  }
+
+  private parseInteger(): Integer {
+    return {
+      kind: ASTKind.Integer,
+      value: parseInt(this.curToken.literal, 10)
     };
   }
 }
