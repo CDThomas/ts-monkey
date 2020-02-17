@@ -1,4 +1,4 @@
-export enum TokenType {
+export enum TokenKind {
   Illegal = "ILLEGAL",
   EOF = "EOF",
 
@@ -39,20 +39,20 @@ export enum TokenType {
 }
 
 export type Token = {
-  type: TokenType;
+  kind: TokenKind;
   literal: string;
 };
 
-const keywords: { [keyword: string]: TokenType } = {
-  fn: TokenType.Function,
-  let: TokenType.Let,
-  true: TokenType.True,
-  false: TokenType.False,
-  if: TokenType.If,
-  else: TokenType.Else,
-  return: TokenType.Return
+const keywords: { [keyword: string]: TokenKind } = {
+  fn: TokenKind.Function,
+  let: TokenKind.Let,
+  true: TokenKind.True,
+  false: TokenKind.False,
+  if: TokenKind.If,
+  else: TokenKind.Else,
+  return: TokenKind.Return
 };
 
-export function lookupIdentifier(identifier: string): TokenType {
-  return keywords[identifier] || TokenType.Ident;
+export function lookupIdentifier(identifier: string): TokenKind {
+  return keywords[identifier] || TokenKind.Ident;
 }
