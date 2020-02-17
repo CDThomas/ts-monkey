@@ -4,7 +4,7 @@ export enum TokenType {
 
   // Identifiers + literals
   Ident = "IDENT",
-  Int = "INT",
+  Integer = "INTEGER",
 
   // Operators
   Assign = "=",
