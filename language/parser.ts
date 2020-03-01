@@ -8,13 +8,14 @@ import {
   PrefixExpression,
   Program,
   ReturnStatment,
-  Statement
+  Statement,
+  InfixExpression
 } from "./ast";
 import Lexer from "./lexer";
 import { Token, TokenKind } from "./token";
 
 type PrefixParseFunction = () => Expression;
-type InfixParseFunction = (expression: Expression) => Expression;
+type InfixParseFunction = (expression: Expression) => InfixExpression;
 
 enum Precedence {
   Lowest,
@@ -26,11 +27,21 @@ enum Precedence {
   Call
 }
 
+const precedences: Partial<Record<TokenKind, Precedence>> = {
+  [TokenKind.EQ]: Precedence.Equals,
+  [TokenKind.NOT_EQ]: Precedence.Equals,
+  [TokenKind.LT]: Precedence.LessGreater,
+  [TokenKind.GT]: Precedence.LessGreater,
+  [TokenKind.Plus]: Precedence.Sum,
+  [TokenKind.Minus]: Precedence.Sum,
+  [TokenKind.Slash]: Precedence.Product,
+  [TokenKind.Asterisk]: Precedence.Product
+};
+
 class Parser {
   lexer: Lexer;
   curToken: Token;
   peekToken: Token;
-  // TODO: Remove Partial here once all fn's are implemented
   prefixParseFunctions: Partial<Record<TokenKind, PrefixParseFunction>>;
   infixParseFunctions: Partial<Record<TokenKind, InfixParseFunction>>;
 
@@ -39,13 +50,28 @@ class Parser {
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
 
+    this.parseIdentifier = this.parseIdentifier.bind(this);
+    this.parseInteger = this.parseInteger.bind(this);
+    this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
+    this.parseInfixExpression = this.parseInfixExpression.bind(this);
+
     this.prefixParseFunctions = {
-      [TokenKind.Ident]: this.parseIdentifier.bind(this),
-      [TokenKind.Integer]: this.parseInteger.bind(this),
-      [TokenKind.Bang]: this.parsePrefixExpression.bind(this),
-      [TokenKind.Minus]: this.parsePrefixExpression.bind(this)
+      [TokenKind.Ident]: this.parseIdentifier,
+      [TokenKind.Integer]: this.parseInteger,
+      [TokenKind.Bang]: this.parsePrefixExpression,
+      [TokenKind.Minus]: this.parsePrefixExpression
     };
-    this.infixParseFunctions = {};
+
+    this.infixParseFunctions = {
+      [TokenKind.Plus]: this.parseInfixExpression,
+      [TokenKind.Minus]: this.parseInfixExpression,
+      [TokenKind.Slash]: this.parseInfixExpression,
+      [TokenKind.Asterisk]: this.parseInfixExpression,
+      [TokenKind.EQ]: this.parseInfixExpression,
+      [TokenKind.NOT_EQ]: this.parseInfixExpression,
+      [TokenKind.LT]: this.parseInfixExpression,
+      [TokenKind.GT]: this.parseInfixExpression
+    };
   }
 
   parseProgram(): Program {
@@ -145,16 +171,29 @@ class Parser {
     };
   }
 
-  // TODO: remove eslint-disable once arg is used
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private parseExpression(_precedence: Precedence): Expression {
+  private parseExpression(precedence: Precedence): Expression {
     const prefix = this.prefixParseFunctions[this.curToken.kind];
 
     if (!prefix) {
       throw new Error(`No prefix parse function for ${this.curToken.kind}`);
     }
 
-    const leftExpression = prefix();
+    let leftExpression = prefix();
+
+    while (
+      !this.peekTokenIs(TokenKind.Semicolon) &&
+      precedence < this.peekPrecedence()
+    ) {
+      const infix = this.infixParseFunctions[this.peekToken.kind];
+
+      if (!infix) {
+        return leftExpression;
+      }
+
+      this.nextToken();
+
+      leftExpression = infix(leftExpression);
+    }
 
     return leftExpression;
   }
@@ -182,6 +221,30 @@ class Parser {
       kind: ASTKind.PrefixExpression,
       operator,
       right: this.parseExpression(Precedence.Prefix)
+    };
+  }
+
+  private peekPrecedence(): Precedence {
+    return precedences[this.peekToken.kind] || Precedence.Lowest;
+  }
+
+  private curPrecedence(): Precedence {
+    return precedences[this.curToken.kind] || Precedence.Lowest;
+  }
+
+  private parseInfixExpression(left: Expression): InfixExpression {
+    const operator = this.curToken.literal;
+    const precedence = this.curPrecedence();
+
+    this.nextToken();
+
+    const right = this.parseExpression(precedence);
+
+    return {
+      kind: ASTKind.InfixExpression,
+      operator,
+      left,
+      right
     };
   }
 }

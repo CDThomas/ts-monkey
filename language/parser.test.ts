@@ -132,4 +132,58 @@ describe("parsing", () => {
       });
     });
   });
+
+  describe("infix operators", () => {
+    const operators = ["+", "-", "*", "/", ">", "<", "==", "!="];
+
+    operators.forEach(operator => {
+      test(operator, () => {
+        const input = `5 ${operator} 5;`;
+
+        const AST = parse(input);
+
+        expect(AST).toEqual({
+          kind: ASTKind.Program,
+          statements: [
+            {
+              kind: ASTKind.ExpressionStatement,
+              expression: {
+                kind: ASTKind.InfixExpression,
+                operator,
+                left: {
+                  kind: ASTKind.Integer,
+                  value: 5
+                },
+                right: {
+                  kind: ASTKind.Integer,
+                  value: 5
+                }
+              }
+            }
+          ]
+        });
+      });
+    });
+  });
+
+  describe("operator precedence", () => {
+    const inputs = [
+      "-a * b",
+      "!-a",
+      "a + b + c",
+      "a + b - c",
+      "a * b * c",
+      "a * b / c",
+      "a + b / c",
+      "a + b * c + d / e - f",
+      "3 + 4; -5 * 5"
+    ];
+
+    inputs.forEach(input => {
+      test(input, () => {
+        const AST = parse(input);
+        expect(AST).toMatchSnapshot();
+      });
+    });
+  });
 });
