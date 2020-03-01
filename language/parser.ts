@@ -5,6 +5,7 @@ import {
   Identifier,
   Integer,
   LetStatement,
+  PrefixExpression,
   Program,
   ReturnStatment,
   Statement
@@ -40,7 +41,9 @@ class Parser {
 
     this.prefixParseFunctions = {
       [TokenKind.Ident]: this.parseIdentifier.bind(this),
-      [TokenKind.Integer]: this.parseInteger.bind(this)
+      [TokenKind.Integer]: this.parseInteger.bind(this),
+      [TokenKind.Bang]: this.parsePrefixExpression.bind(this),
+      [TokenKind.Minus]: this.parsePrefixExpression.bind(this)
     };
     this.infixParseFunctions = {};
   }
@@ -137,7 +140,7 @@ class Parser {
     }
 
     return {
-      kind: ASTKind.Expression,
+      kind: ASTKind.ExpressionStatement,
       expression
     };
   }
@@ -167,6 +170,18 @@ class Parser {
     return {
       kind: ASTKind.Integer,
       value: parseInt(this.curToken.literal, 10)
+    };
+  }
+
+  private parsePrefixExpression(): PrefixExpression {
+    const operator = this.curToken.literal;
+
+    this.nextToken();
+
+    return {
+      kind: ASTKind.PrefixExpression,
+      operator,
+      right: this.parseExpression(Precedence.Prefix)
     };
   }
 }

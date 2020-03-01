@@ -56,7 +56,7 @@ describe("parsing", () => {
       kind: ASTKind.Program,
       statements: [
         {
-          kind: ASTKind.Expression,
+          kind: ASTKind.ExpressionStatement,
           expression: {
             kind: ASTKind.Identifier,
             value: "foobar"
@@ -75,13 +75,61 @@ describe("parsing", () => {
       kind: ASTKind.Program,
       statements: [
         {
-          kind: ASTKind.Expression,
+          kind: ASTKind.ExpressionStatement,
           expression: {
             kind: ASTKind.Integer,
             value: 5
           }
         }
       ]
+    });
+  });
+
+  describe("prefix operators", () => {
+    test("!", () => {
+      const input = "!5";
+
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.PrefixExpression,
+              operator: "!",
+              right: {
+                kind: ASTKind.Integer,
+                value: 5
+              }
+            }
+          }
+        ]
+      });
+    });
+
+    test("-", () => {
+      const input = "-15";
+
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.PrefixExpression,
+              operator: "-",
+              right: {
+                kind: ASTKind.Integer,
+                value: 15
+              }
+            }
+          }
+        ]
+      });
     });
   });
 });
