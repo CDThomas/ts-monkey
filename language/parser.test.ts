@@ -86,82 +86,77 @@ describe("parsing", () => {
   });
 
   describe("prefix operators", () => {
-    test("!", () => {
-      const input = "!5";
+    const cases = [
+      { input: "!5", description: "bang integer" },
+      { input: "-5", description: "negative integer" },
+      { input: "!true", description: "bang true" },
+      { input: "!false", description: "bang false" }
+    ];
 
-      const AST = parse(input);
-
-      expect(AST).toEqual({
-        kind: ASTKind.Program,
-        statements: [
-          {
-            kind: ASTKind.ExpressionStatement,
-            expression: {
-              kind: ASTKind.PrefixExpression,
-              operator: "!",
-              right: {
-                kind: ASTKind.Integer,
-                value: 5
-              }
-            }
-          }
-        ]
-      });
-    });
-
-    test("-", () => {
-      const input = "-15";
-
-      const AST = parse(input);
-
-      expect(AST).toEqual({
-        kind: ASTKind.Program,
-        statements: [
-          {
-            kind: ASTKind.ExpressionStatement,
-            expression: {
-              kind: ASTKind.PrefixExpression,
-              operator: "-",
-              right: {
-                kind: ASTKind.Integer,
-                value: 15
-              }
-            }
-          }
-        ]
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
+        const AST = parse(input);
+        expect(AST).toMatchSnapshot();
       });
     });
   });
 
   describe("infix operators", () => {
-    const operators = ["+", "-", "*", "/", ">", "<", "==", "!="];
+    const cases = [
+      { input: "5 + 5", description: "adding integers" },
+      { input: "5 - 5", description: "subtracting integers" },
+      { input: "5 * 5", description: "multiplying integers" },
+      { input: "5 / 5", description: "dividing integers" },
+      { input: "5 > 5", description: "integer greater than integer" },
+      { input: "5 < 5", description: "integer less then integer" },
+      { input: "5 == 5", description: "integer equal to integer" },
+      { input: "5 != 5", description: "integer not equal to integer" },
+      { input: "false == true", description: "boolean equal to boolean" },
+      { input: "true != false", description: "boolean not equal to boolean" }
+    ];
 
-    operators.forEach(operator => {
-      test(operator, () => {
-        const input = `5 ${operator} 5;`;
-
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
         const AST = parse(input);
+        expect(AST).toMatchSnapshot();
+      });
+    });
+  });
 
-        expect(AST).toEqual({
-          kind: ASTKind.Program,
-          statements: [
-            {
-              kind: ASTKind.ExpressionStatement,
-              expression: {
-                kind: ASTKind.InfixExpression,
-                operator,
-                left: {
-                  kind: ASTKind.Integer,
-                  value: 5
-                },
-                right: {
-                  kind: ASTKind.Integer,
-                  value: 5
-                }
-              }
+  describe("boolean literals", () => {
+    test("true", () => {
+      const input = "true;";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.Bool,
+              value: true
             }
-          ]
-        });
+          }
+        ]
+      });
+    });
+
+    test("false", () => {
+      const input = "false;";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.Bool,
+              value: false
+            }
+          }
+        ]
       });
     });
   });
@@ -176,7 +171,9 @@ describe("parsing", () => {
       "a * b / c",
       "a + b / c",
       "a + b * c + d / e - f",
-      "3 + 4; -5 * 5"
+      "3 + 4; -5 * 5",
+      "3 > 5 == false",
+      "3 < 5 == true"
     ];
 
     inputs.forEach(input => {
