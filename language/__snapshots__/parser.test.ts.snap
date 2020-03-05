@@ -1,5 +1,235 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parsing infix operators adding integers: 5 + 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "+",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators boolean equal to boolean: false == true 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "BOOL",
+          "value": false,
+        },
+        "operator": "==",
+        "right": Object {
+          "kind": "BOOL",
+          "value": true,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators boolean not equal to boolean: true != false 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "BOOL",
+          "value": true,
+        },
+        "operator": "!=",
+        "right": Object {
+          "kind": "BOOL",
+          "value": false,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators dividing integers: 5 / 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "/",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators integer equal to integer: 5 == 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "==",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators integer greater than integer: 5 > 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": ">",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators integer less then integer: 5 < 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "<",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators integer not equal to integer: 5 != 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "!=",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators multiplying integers: 5 * 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "*",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing infix operators subtracting integers: 5 - 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+        "operator": "-",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
 exports[`parsing operator precedence !-a 1`] = `
 Object {
   "kind": "PROGRAM",
@@ -84,6 +314,68 @@ Object {
         "right": Object {
           "kind": "INTEGER",
           "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence 3 < 5 == true 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INFIX_EXPRESSION",
+          "left": Object {
+            "kind": "INTEGER",
+            "value": 3,
+          },
+          "operator": "<",
+          "right": Object {
+            "kind": "INTEGER",
+            "value": 5,
+          },
+        },
+        "operator": "==",
+        "right": Object {
+          "kind": "BOOL",
+          "value": true,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence 3 > 5 == false 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INFIX_EXPRESSION",
+          "left": Object {
+            "kind": "INTEGER",
+            "value": 3,
+          },
+          "operator": ">",
+          "right": Object {
+            "kind": "INTEGER",
+            "value": 5,
+          },
+        },
+        "operator": "==",
+        "right": Object {
+          "kind": "BOOL",
+          "value": false,
         },
       },
       "kind": "EXPRESSION",
@@ -294,6 +586,82 @@ Object {
         "right": Object {
           "kind": "IDENTIFIER",
           "value": "c",
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing prefix operators bang false: !false 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "PREFIX_EXPRESSION",
+        "operator": "!",
+        "right": Object {
+          "kind": "BOOL",
+          "value": false,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing prefix operators bang integer: !5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "PREFIX_EXPRESSION",
+        "operator": "!",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing prefix operators bang true: !true 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "PREFIX_EXPRESSION",
+        "operator": "!",
+        "right": Object {
+          "kind": "BOOL",
+          "value": true,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing prefix operators negative integer: -5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "PREFIX_EXPRESSION",
+        "operator": "-",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
         },
       },
       "kind": "EXPRESSION",

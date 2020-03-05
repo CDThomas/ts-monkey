@@ -1,4 +1,5 @@
 export enum ASTKind {
+  Bool = "BOOL",
   ExpressionStatement = "EXPRESSION",
   Identifier = "IDENTIFIER",
   InfixExpression = "INFIX_EXPRESSION",
@@ -12,6 +13,7 @@ export enum ASTKind {
 export type Node = Program | Statement | Expression;
 export type Statement = ExpressionStatement | LetStatement | ReturnStatment;
 export type Expression =
+  | Bool
   | Identifier
   | Integer
   | PrefixExpression
@@ -41,6 +43,11 @@ export type ReturnStatment = {
 };
 
 // Expressions
+
+export type Bool = {
+  kind: ASTKind.Bool;
+  value: boolean;
+};
 
 export type Identifier = {
   kind: ASTKind.Identifier;

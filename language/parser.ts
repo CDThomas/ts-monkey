@@ -1,5 +1,6 @@
 import {
   ASTKind,
+  Bool,
   Expression,
   ExpressionStatement,
   Identifier,
@@ -50,6 +51,7 @@ class Parser {
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
 
+    this.parseBool = this.parseBool.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
@@ -59,7 +61,9 @@ class Parser {
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.Integer]: this.parseInteger,
       [TokenKind.Bang]: this.parsePrefixExpression,
-      [TokenKind.Minus]: this.parsePrefixExpression
+      [TokenKind.Minus]: this.parsePrefixExpression,
+      [TokenKind.True]: this.parseBool,
+      [TokenKind.False]: this.parseBool
     };
 
     this.infixParseFunctions = {
@@ -196,6 +200,13 @@ class Parser {
     }
 
     return leftExpression;
+  }
+
+  private parseBool(): Bool {
+    return {
+      kind: ASTKind.Bool,
+      value: this.curTokenIs(TokenKind.True)
+    };
   }
 
   private parseIdentifier(): Identifier {
