@@ -29,10 +29,10 @@ enum Precedence {
 }
 
 const precedences: Partial<Record<TokenKind, Precedence>> = {
-  [TokenKind.EQ]: Precedence.Equals,
-  [TokenKind.NOT_EQ]: Precedence.Equals,
-  [TokenKind.LT]: Precedence.LessGreater,
-  [TokenKind.GT]: Precedence.LessGreater,
+  [TokenKind.Equal]: Precedence.Equals,
+  [TokenKind.NotEqual]: Precedence.Equals,
+  [TokenKind.LessThan]: Precedence.LessGreater,
+  [TokenKind.GreaterThan]: Precedence.LessGreater,
   [TokenKind.Plus]: Precedence.Sum,
   [TokenKind.Minus]: Precedence.Sum,
   [TokenKind.Slash]: Precedence.Product,
@@ -71,10 +71,10 @@ class Parser {
       [TokenKind.Minus]: this.parseInfixExpression,
       [TokenKind.Slash]: this.parseInfixExpression,
       [TokenKind.Asterisk]: this.parseInfixExpression,
-      [TokenKind.EQ]: this.parseInfixExpression,
-      [TokenKind.NOT_EQ]: this.parseInfixExpression,
-      [TokenKind.LT]: this.parseInfixExpression,
-      [TokenKind.GT]: this.parseInfixExpression
+      [TokenKind.Equal]: this.parseInfixExpression,
+      [TokenKind.NotEqual]: this.parseInfixExpression,
+      [TokenKind.LessThan]: this.parseInfixExpression,
+      [TokenKind.GreaterThan]: this.parseInfixExpression
     };
   }
 

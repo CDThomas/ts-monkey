@@ -32,7 +32,7 @@ export default class Lexer {
           const ch = this.ch;
           this.readChar();
           const literal = ch + this.ch;
-          token = this.newToken(TokenKind.EQ, literal);
+          token = this.newToken(TokenKind.Equal, literal);
         } else {
           token = this.newToken(TokenKind.Assign, this.ch);
         }
@@ -48,7 +48,7 @@ export default class Lexer {
           const ch = this.ch;
           this.readChar();
           const literal = ch + this.ch;
-          token = this.newToken(TokenKind.NOT_EQ, literal);
+          token = this.newToken(TokenKind.NotEqual, literal);
         } else {
           token = this.newToken(TokenKind.Bang, this.ch);
         }
@@ -60,10 +60,10 @@ export default class Lexer {
         token = this.newToken(TokenKind.Asterisk, this.ch);
         break;
       case "<":
-        token = this.newToken(TokenKind.LT, this.ch);
+        token = this.newToken(TokenKind.LessThan, this.ch);
         break;
       case ">":
-        token = this.newToken(TokenKind.GT, this.ch);
+        token = this.newToken(TokenKind.GreaterThan, this.ch);
         break;
       case ";":
         token = this.newToken(TokenKind.Semicolon, this.ch);
