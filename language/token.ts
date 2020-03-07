@@ -14,11 +14,11 @@ export enum TokenKind {
   Asterisk = "*",
   Slash = "/",
 
-  LT = "<",
-  GT = ">",
+  LessThan = "<",
+  GreaterThan = ">",
 
-  EQ = "==",
-  NOT_EQ = "!=",
+  Equal = "==",
+  NotEqual = "!=",
 
   // Delimiters
   Comma = ",",
