@@ -91,7 +91,7 @@ describe("printing", () => {
       }
     };
 
-    expect(print(node)).toBe("!true");
+    expect(print(node)).toBe("(!true)");
   });
 
   test("return statements", () => {
