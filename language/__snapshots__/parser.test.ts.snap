@@ -230,99 +230,7 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence !-a 1`] = `
-Object {
-  "kind": "PROGRAM",
-  "statements": Array [
-    Object {
-      "expression": Object {
-        "kind": "PREFIX_EXPRESSION",
-        "operator": "!",
-        "right": Object {
-          "kind": "PREFIX_EXPRESSION",
-          "operator": "-",
-          "right": Object {
-            "kind": "IDENTIFIER",
-            "value": "a",
-          },
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-  ],
-}
-`;
-
-exports[`parsing operator precedence -a * b 1`] = `
-Object {
-  "kind": "PROGRAM",
-  "statements": Array [
-    Object {
-      "expression": Object {
-        "kind": "INFIX_EXPRESSION",
-        "left": Object {
-          "kind": "PREFIX_EXPRESSION",
-          "operator": "-",
-          "right": Object {
-            "kind": "IDENTIFIER",
-            "value": "a",
-          },
-        },
-        "operator": "*",
-        "right": Object {
-          "kind": "IDENTIFIER",
-          "value": "b",
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-  ],
-}
-`;
-
-exports[`parsing operator precedence 3 + 4; -5 * 5 1`] = `
-Object {
-  "kind": "PROGRAM",
-  "statements": Array [
-    Object {
-      "expression": Object {
-        "kind": "INFIX_EXPRESSION",
-        "left": Object {
-          "kind": "INTEGER",
-          "value": 3,
-        },
-        "operator": "+",
-        "right": Object {
-          "kind": "INTEGER",
-          "value": 4,
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-    Object {
-      "expression": Object {
-        "kind": "INFIX_EXPRESSION",
-        "left": Object {
-          "kind": "PREFIX_EXPRESSION",
-          "operator": "-",
-          "right": Object {
-            "kind": "INTEGER",
-            "value": 5,
-          },
-        },
-        "operator": "*",
-        "right": Object {
-          "kind": "INTEGER",
-          "value": 5,
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-  ],
-}
-`;
-
-exports[`parsing operator precedence 3 < 5 == true 1`] = `
+exports[`parsing operator precedence addition and addition: a + b + c 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -332,19 +240,19 @@ Object {
         "left": Object {
           "kind": "INFIX_EXPRESSION",
           "left": Object {
-            "kind": "INTEGER",
-            "value": 3,
+            "kind": "IDENTIFIER",
+            "value": "a",
           },
-          "operator": "<",
+          "operator": "+",
           "right": Object {
-            "kind": "INTEGER",
-            "value": 5,
+            "kind": "IDENTIFIER",
+            "value": "b",
           },
         },
-        "operator": "==",
+        "operator": "+",
         "right": Object {
-          "kind": "BOOL",
-          "value": true,
+          "kind": "IDENTIFIER",
+          "value": "c",
         },
       },
       "kind": "EXPRESSION",
@@ -353,7 +261,69 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence 3 > 5 == false 1`] = `
+exports[`parsing operator precedence addition and division: a + b / c 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "IDENTIFIER",
+          "value": "a",
+        },
+        "operator": "+",
+        "right": Object {
+          "kind": "INFIX_EXPRESSION",
+          "left": Object {
+            "kind": "IDENTIFIER",
+            "value": "b",
+          },
+          "operator": "/",
+          "right": Object {
+            "kind": "IDENTIFIER",
+            "value": "c",
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence addition and subtraction: a + b - c 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INFIX_EXPRESSION",
+          "left": Object {
+            "kind": "IDENTIFIER",
+            "value": "a",
+          },
+          "operator": "+",
+          "right": Object {
+            "kind": "IDENTIFIER",
+            "value": "b",
+          },
+        },
+        "operator": "-",
+        "right": Object {
+          "kind": "IDENTIFIER",
+          "value": "c",
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence greater than and equality: 3 > 5 == false 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -384,7 +354,7 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence a * b * c 1`] = `
+exports[`parsing operator precedence less than and equality: 3 < 5 == true 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -394,19 +364,19 @@ Object {
         "left": Object {
           "kind": "INFIX_EXPRESSION",
           "left": Object {
-            "kind": "IDENTIFIER",
-            "value": "a",
+            "kind": "INTEGER",
+            "value": 3,
           },
-          "operator": "*",
+          "operator": "<",
           "right": Object {
-            "kind": "IDENTIFIER",
-            "value": "b",
+            "kind": "INTEGER",
+            "value": 5,
           },
         },
-        "operator": "*",
+        "operator": "==",
         "right": Object {
-          "kind": "IDENTIFIER",
-          "value": "c",
+          "kind": "BOOL",
+          "value": true,
         },
       },
       "kind": "EXPRESSION",
@@ -415,38 +385,7 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence a * b / c 1`] = `
-Object {
-  "kind": "PROGRAM",
-  "statements": Array [
-    Object {
-      "expression": Object {
-        "kind": "INFIX_EXPRESSION",
-        "left": Object {
-          "kind": "INFIX_EXPRESSION",
-          "left": Object {
-            "kind": "IDENTIFIER",
-            "value": "a",
-          },
-          "operator": "*",
-          "right": Object {
-            "kind": "IDENTIFIER",
-            "value": "b",
-          },
-        },
-        "operator": "/",
-        "right": Object {
-          "kind": "IDENTIFIER",
-          "value": "c",
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-  ],
-}
-`;
-
-exports[`parsing operator precedence a + b * c + d / e - f 1`] = `
+exports[`parsing operator precedence multiple arithmetic operators: a + b * c + d / e - f 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -501,7 +440,49 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence a + b + c 1`] = `
+exports[`parsing operator precedence multiple statements: 3 + 4; -5 * 5 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "INTEGER",
+          "value": 3,
+        },
+        "operator": "+",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 4,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "PREFIX_EXPRESSION",
+          "operator": "-",
+          "right": Object {
+            "kind": "INTEGER",
+            "value": 5,
+          },
+        },
+        "operator": "*",
+        "right": Object {
+          "kind": "INTEGER",
+          "value": 5,
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence multiplication and division: a * b / c 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -514,13 +495,13 @@ Object {
             "kind": "IDENTIFIER",
             "value": "a",
           },
-          "operator": "+",
+          "operator": "*",
           "right": Object {
             "kind": "IDENTIFIER",
             "value": "b",
           },
         },
-        "operator": "+",
+        "operator": "/",
         "right": Object {
           "kind": "IDENTIFIER",
           "value": "c",
@@ -532,38 +513,7 @@ Object {
 }
 `;
 
-exports[`parsing operator precedence a + b / c 1`] = `
-Object {
-  "kind": "PROGRAM",
-  "statements": Array [
-    Object {
-      "expression": Object {
-        "kind": "INFIX_EXPRESSION",
-        "left": Object {
-          "kind": "IDENTIFIER",
-          "value": "a",
-        },
-        "operator": "+",
-        "right": Object {
-          "kind": "INFIX_EXPRESSION",
-          "left": Object {
-            "kind": "IDENTIFIER",
-            "value": "b",
-          },
-          "operator": "/",
-          "right": Object {
-            "kind": "IDENTIFIER",
-            "value": "c",
-          },
-        },
-      },
-      "kind": "EXPRESSION",
-    },
-  ],
-}
-`;
-
-exports[`parsing operator precedence a + b - c 1`] = `
+exports[`parsing operator precedence multiplication and multiplication: a * b * c 1`] = `
 Object {
   "kind": "PROGRAM",
   "statements": Array [
@@ -576,16 +526,66 @@ Object {
             "kind": "IDENTIFIER",
             "value": "a",
           },
-          "operator": "+",
+          "operator": "*",
           "right": Object {
             "kind": "IDENTIFIER",
             "value": "b",
           },
         },
-        "operator": "-",
+        "operator": "*",
         "right": Object {
           "kind": "IDENTIFIER",
           "value": "c",
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence prefix operator and multiplication: -a * b 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "INFIX_EXPRESSION",
+        "left": Object {
+          "kind": "PREFIX_EXPRESSION",
+          "operator": "-",
+          "right": Object {
+            "kind": "IDENTIFIER",
+            "value": "a",
+          },
+        },
+        "operator": "*",
+        "right": Object {
+          "kind": "IDENTIFIER",
+          "value": "b",
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing operator precedence two prefix operators: !-a 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "PREFIX_EXPRESSION",
+        "operator": "!",
+        "right": Object {
+          "kind": "PREFIX_EXPRESSION",
+          "operator": "-",
+          "right": Object {
+            "kind": "IDENTIFIER",
+            "value": "a",
+          },
         },
       },
       "kind": "EXPRESSION",

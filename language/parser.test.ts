@@ -162,22 +162,25 @@ describe("parsing", () => {
   });
 
   describe("operator precedence", () => {
-    const inputs = [
-      "-a * b",
-      "!-a",
-      "a + b + c",
-      "a + b - c",
-      "a * b * c",
-      "a * b / c",
-      "a + b / c",
-      "a + b * c + d / e - f",
-      "3 + 4; -5 * 5",
-      "3 > 5 == false",
-      "3 < 5 == true"
+    const cases = [
+      { input: "-a * b", description: "prefix operator and multiplication" },
+      { input: "!-a", description: "two prefix operators" },
+      { input: "a + b + c", description: "addition and addition" },
+      { input: "a + b - c", description: "addition and subtraction" },
+      { input: "a * b * c", description: "multiplication and multiplication" },
+      { input: "a * b / c", description: "multiplication and division" },
+      { input: "a + b / c", description: "addition and division" },
+      {
+        input: "a + b * c + d / e - f",
+        description: "multiple arithmetic operators"
+      },
+      { input: "3 + 4; -5 * 5", description: "multiple statements" },
+      { input: "3 > 5 == false", description: "greater than and equality" },
+      { input: "3 < 5 == true", description: "less than and equality" }
     ];
 
-    inputs.forEach(input => {
-      test(input, () => {
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
         const AST = parse(input);
         expect(AST).toMatchSnapshot();
       });
