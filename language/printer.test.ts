@@ -1,8 +1,10 @@
 import {
   ASTKind,
+  BlockStatement,
   Bool,
   ExpressionStatement,
   Identifier,
+  IfExpression,
   InfixExpression,
   Integer,
   LetStatement,
@@ -13,6 +15,30 @@ import {
 import { print } from "./printer";
 
 describe("printing", () => {
+  test("block statements", () => {
+    const node: BlockStatement = {
+      kind: ASTKind.BlockStatement,
+      statements: [
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.Identifier,
+            value: "x"
+          }
+        },
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.Identifier,
+            value: "y"
+          }
+        }
+      ]
+    };
+
+    expect(print(node)).toBe("x;\ny;");
+  });
+
   test("booleans", () => {
     const node: Bool = {
       kind: ASTKind.Bool,
@@ -41,6 +67,57 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("x");
+  });
+
+  test("if expressions", () => {
+    const node: IfExpression = {
+      kind: ASTKind.IfExpression,
+      condition: {
+        kind: ASTKind.Bool,
+        value: true
+      },
+      consequence: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: { kind: ASTKind.Identifier, value: "x" }
+          }
+        ]
+      }
+    };
+
+    expect(print(node)).toBe("if (true) {\n  x;\n}");
+  });
+
+  test("if expressions with alternatives", () => {
+    const node: IfExpression = {
+      kind: ASTKind.IfExpression,
+      condition: {
+        kind: ASTKind.Bool,
+        value: true
+      },
+      consequence: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: { kind: ASTKind.Identifier, value: "x" }
+          }
+        ]
+      },
+      alternative: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: { kind: ASTKind.Identifier, value: "y" }
+          }
+        ]
+      }
+    };
+
+    expect(print(node)).toBe("if (true) {\n  x;\n} else {\n  y;\n}");
   });
 
   test("infix expressions", () => {

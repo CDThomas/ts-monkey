@@ -67,6 +67,81 @@ describe("parsing", () => {
     });
   });
 
+  test("if expressions", () => {
+    const input = "if (x < y) { x }";
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.IfExpression,
+            condition: {
+              kind: ASTKind.InfixExpression,
+              left: { kind: ASTKind.Identifier, value: "x" },
+              operator: "<",
+              right: { kind: ASTKind.Identifier, value: "y" }
+            },
+            consequence: {
+              kind: ASTKind.BlockStatement,
+              statements: [
+                {
+                  kind: ASTKind.ExpressionStatement,
+                  expression: { kind: ASTKind.Identifier, value: "x" }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    });
+  });
+
+  test.only("if expressions with alternatives", () => {
+    const input = "if (x < y) { x } else { y }";
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.IfExpression,
+            condition: {
+              kind: ASTKind.InfixExpression,
+              left: { kind: ASTKind.Identifier, value: "x" },
+              operator: "<",
+              right: { kind: ASTKind.Identifier, value: "y" }
+            },
+            consequence: {
+              kind: ASTKind.BlockStatement,
+              statements: [
+                {
+                  kind: ASTKind.ExpressionStatement,
+                  expression: { kind: ASTKind.Identifier, value: "x" }
+                }
+              ]
+            },
+            alternative: {
+              kind: ASTKind.BlockStatement,
+              statements: [
+                {
+                  kind: ASTKind.ExpressionStatement,
+                  expression: { kind: ASTKind.Identifier, value: "y" }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    });
+  });
+
   test("integer literal expressions", () => {
     const input = "5;";
 
