@@ -4,13 +4,15 @@ import {
   Expression,
   ExpressionStatement,
   Identifier,
+  IfExpression,
+  InfixExpression,
   Integer,
   LetStatement,
   PrefixExpression,
   Program,
   ReturnStatment,
   Statement,
-  InfixExpression
+  BlockStatement
 } from "./ast";
 import Lexer from "./lexer";
 import { Token, TokenKind } from "./token";
@@ -53,6 +55,7 @@ class Parser {
 
     this.parseBool = this.parseBool.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
+    this.parseIfExpression = this.parseIfExpression.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
     this.parseGroupedExpression = this.parseGroupedExpression.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
@@ -60,6 +63,7 @@ class Parser {
 
     this.prefixParseFunctions = {
       [TokenKind.Ident]: this.parseIdentifier,
+      [TokenKind.If]: this.parseIfExpression,
       [TokenKind.Integer]: this.parseInteger,
       [TokenKind.Bang]: this.parsePrefixExpression,
       [TokenKind.LParen]: this.parseGroupedExpression,
@@ -101,7 +105,7 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
   }
 
-  private parseStatement(): Statement | null {
+  private parseStatement(): Statement {
     switch (this.curToken.kind) {
       case TokenKind.Let:
         return this.parseLetStatement();
@@ -112,7 +116,7 @@ class Parser {
     }
   }
 
-  private parseLetStatement(): LetStatement | null {
+  private parseLetStatement(): LetStatement {
     this.expectPeek(TokenKind.Ident);
 
     const name: Identifier = {
@@ -204,6 +208,25 @@ class Parser {
     return leftExpression;
   }
 
+  private parseBlockStatement(): BlockStatement {
+    const statements: Statement[] = [];
+
+    this.nextToken();
+
+    while (
+      !this.curTokenIs(TokenKind.RBrace) &&
+      !this.curTokenIs(TokenKind.EOF)
+    ) {
+      statements.push(this.parseStatement());
+      this.nextToken();
+    }
+
+    return {
+      kind: ASTKind.BlockStatement,
+      statements
+    };
+  }
+
   private parseBool(): Bool {
     return {
       kind: ASTKind.Bool,
@@ -215,6 +238,34 @@ class Parser {
     return {
       kind: ASTKind.Identifier,
       value: this.curToken.literal
+    };
+  }
+
+  private parseIfExpression(): IfExpression {
+    this.expectPeek(TokenKind.LParen);
+
+    this.nextToken();
+
+    const condition = this.parseExpression(Precedence.Lowest);
+
+    this.expectPeek(TokenKind.RParen);
+    this.expectPeek(TokenKind.LBrace);
+
+    const consequence = this.parseBlockStatement();
+
+    let alternative;
+    if (this.peekTokenIs(TokenKind.Else)) {
+      this.nextToken();
+      this.expectPeek(TokenKind.LBrace);
+
+      alternative = this.parseBlockStatement();
+    }
+
+    return {
+      kind: ASTKind.IfExpression,
+      condition,
+      consequence,
+      alternative
     };
   }
 

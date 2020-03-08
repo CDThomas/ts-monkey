@@ -1,7 +1,9 @@
 export enum ASTKind {
+  BlockStatement = "BLOCK_STATEMENT",
   Bool = "BOOL",
   ExpressionStatement = "EXPRESSION",
   Identifier = "IDENTIFIER",
+  IfExpression = "IF_EXPRESSION",
   InfixExpression = "INFIX_EXPRESSION",
   Integer = "INTEGER",
   Let = "LET",
@@ -11,10 +13,17 @@ export enum ASTKind {
 }
 
 export type Node = Program | Statement | Expression;
-export type Statement = ExpressionStatement | LetStatement | ReturnStatment;
+
+export type Statement =
+  | BlockStatement
+  | ExpressionStatement
+  | LetStatement
+  | ReturnStatment;
+
 export type Expression =
   | Bool
   | Identifier
+  | IfExpression
   | Integer
   | PrefixExpression
   | InfixExpression;
@@ -25,6 +34,11 @@ export type Program = {
 };
 
 // Statements
+
+export type BlockStatement = {
+  kind: ASTKind.BlockStatement;
+  statements: Statement[];
+};
 
 export type ExpressionStatement = {
   kind: ASTKind.ExpressionStatement;
@@ -52,6 +66,13 @@ export type Bool = {
 export type Identifier = {
   kind: ASTKind.Identifier;
   value: string;
+};
+
+export type IfExpression = {
+  kind: ASTKind.IfExpression;
+  condition: Expression;
+  consequence: BlockStatement;
+  alternative?: BlockStatement;
 };
 
 export type InfixExpression = {
