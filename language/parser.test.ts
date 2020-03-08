@@ -223,6 +223,32 @@ describe("parsing", () => {
         input: "3 + 4 * 5 ==  3 * 1 + 4 * 5",
         expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)));",
         description: "Arithmetic operators and comparison operators"
+      },
+      {
+        input: "1 + (2 + 3) + 4",
+        expected: "((1 + (2 + 3)) + 4);",
+        description: "Grouped expressions with addition"
+      },
+      {
+        input: "(5 + 5) * 2",
+        expected: "((5 + 5) * 2);",
+        description: "Grouped expressions with addition and multiplication"
+      },
+      {
+        input: "2 / (5 + 5)",
+        expected: "(2 / (5 + 5));",
+        description: "Grouped expressions with addition and division"
+      },
+      {
+        input: "-(5 + 5)",
+        expected: "(-(5 + 5));",
+        description: "Grouped expressions with addition and infix operator"
+      },
+      {
+        input: "!(true == true)",
+        expected: "(!(true == true));",
+        description:
+          "Grouped expressions with comparison operator and infix operator"
       }
     ];
 
