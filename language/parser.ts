@@ -54,6 +54,7 @@ class Parser {
     this.parseBool = this.parseBool.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
+    this.parseGroupedExpression = this.parseGroupedExpression.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
     this.parseInfixExpression = this.parseInfixExpression.bind(this);
 
@@ -61,6 +62,7 @@ class Parser {
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.Integer]: this.parseInteger,
       [TokenKind.Bang]: this.parsePrefixExpression,
+      [TokenKind.LParen]: this.parseGroupedExpression,
       [TokenKind.Minus]: this.parsePrefixExpression,
       [TokenKind.True]: this.parseBool,
       [TokenKind.False]: this.parseBool
@@ -257,6 +259,16 @@ class Parser {
       left,
       right
     };
+  }
+
+  private parseGroupedExpression(): Expression {
+    this.nextToken();
+
+    const expression = this.parseExpression(Precedence.Lowest);
+
+    this.expectPeek(TokenKind.RParen);
+
+    return expression;
   }
 }
 

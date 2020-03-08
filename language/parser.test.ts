@@ -1,6 +1,7 @@
 import Parser from "./parser";
 import Lexer from "./lexer";
 import { ASTKind, Program } from "./ast";
+import { print } from "./printer";
 
 function parse(input: string): Program {
   const lexer = new Lexer(input);
@@ -162,24 +163,99 @@ describe("parsing", () => {
   });
 
   describe("operator precedence", () => {
-    const inputs = [
-      "-a * b",
-      "!-a",
-      "a + b + c",
-      "a + b - c",
-      "a * b * c",
-      "a * b / c",
-      "a + b / c",
-      "a + b * c + d / e - f",
-      "3 + 4; -5 * 5",
-      "3 > 5 == false",
-      "3 < 5 == true"
+    const cases = [
+      {
+        input: "-a * b",
+        expected: "((-a) * b);",
+        description: "prefix operator and multiplication"
+      },
+      {
+        input: "!-a",
+        expected: "(!(-a));",
+        description: "two prefix operators"
+      },
+      {
+        input: "a + b + c",
+        expected: "((a + b) + c);",
+        description: "addition and addition"
+      },
+      {
+        input: "a + b - c",
+        expected: "((a + b) - c);",
+        description: "addition and subtraction"
+      },
+      {
+        input: "a * b * c",
+        expected: "((a * b) * c);",
+        description: "multiplication and multiplication"
+      },
+      {
+        input: "a * b / c",
+        expected: "((a * b) / c);",
+        description: "multiplication and division"
+      },
+      {
+        input: "a + b / c",
+        expected: "(a + (b / c));",
+        description: "addition and division"
+      },
+      {
+        input: "a + b * c + d / e - f",
+        expected: "(((a + (b * c)) + (d / e)) - f);",
+        description: "multiple arithmetic operators"
+      },
+      {
+        input: "3 + 4; -5 * 5",
+        expected: "(3 + 4);\n((-5) * 5);",
+        description: "multiple statements"
+      },
+      {
+        input: "5 > 4 == 3 < 4",
+        expected: "((5 > 4) == (3 < 4));",
+        description: "Greater than, less than, and equality"
+      },
+      {
+        input: "5 < 4 != 3 > 4",
+        expected: "((5 < 4) != (3 > 4));",
+        description: "Greater than, less than, and inequality"
+      },
+      {
+        input: "3 + 4 * 5 ==  3 * 1 + 4 * 5",
+        expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)));",
+        description: "Arithmetic operators and comparison operators"
+      },
+      {
+        input: "1 + (2 + 3) + 4",
+        expected: "((1 + (2 + 3)) + 4);",
+        description: "Grouped expressions with addition"
+      },
+      {
+        input: "(5 + 5) * 2",
+        expected: "((5 + 5) * 2);",
+        description: "Grouped expressions with addition and multiplication"
+      },
+      {
+        input: "2 / (5 + 5)",
+        expected: "(2 / (5 + 5));",
+        description: "Grouped expressions with addition and division"
+      },
+      {
+        input: "-(5 + 5)",
+        expected: "(-(5 + 5));",
+        description: "Grouped expressions with addition and infix operator"
+      },
+      {
+        input: "!(true == true)",
+        expected: "(!(true == true));",
+        description:
+          "Grouped expressions with comparison operator and infix operator"
+      }
     ];
 
-    inputs.forEach(input => {
-      test(input, () => {
+    cases.forEach(({ input, description, expected }) => {
+      test(`${description}: ${input}`, () => {
         const AST = parse(input);
-        expect(AST).toMatchSnapshot();
+        expect(print(AST)).toBe(expected);
       });
     });
   });

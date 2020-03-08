@@ -15,7 +15,7 @@ function print(node: Node): string {
     case ASTKind.Let:
       return `let ${print(node.name)};`;
     case ASTKind.PrefixExpression:
-      return `${node.operator}${print(node.right)}`;
+      return `(${node.operator}${print(node.right)})`;
     case ASTKind.Program:
       return node.statements.map(print).join("\n");
     case ASTKind.Return:
