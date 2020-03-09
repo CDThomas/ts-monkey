@@ -3,6 +3,7 @@ import {
   Bool,
   Expression,
   ExpressionStatement,
+  FunctionLiteral,
   Identifier,
   IfExpression,
   InfixExpression,
@@ -54,6 +55,7 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
 
     this.parseBool = this.parseBool.bind(this);
+    this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseIfExpression = this.parseIfExpression.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
@@ -62,14 +64,15 @@ class Parser {
     this.parseInfixExpression = this.parseInfixExpression.bind(this);
 
     this.prefixParseFunctions = {
+      [TokenKind.Bang]: this.parsePrefixExpression,
+      [TokenKind.False]: this.parseBool,
+      [TokenKind.Function]: this.parseFunctionLiteral,
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.If]: this.parseIfExpression,
       [TokenKind.Integer]: this.parseInteger,
-      [TokenKind.Bang]: this.parsePrefixExpression,
       [TokenKind.LParen]: this.parseGroupedExpression,
       [TokenKind.Minus]: this.parsePrefixExpression,
-      [TokenKind.True]: this.parseBool,
-      [TokenKind.False]: this.parseBool
+      [TokenKind.True]: this.parseBool
     };
 
     this.infixParseFunctions = {
@@ -239,6 +242,56 @@ class Parser {
       kind: ASTKind.Identifier,
       value: this.curToken.literal
     };
+  }
+
+  private parseFunctionLiteral(): FunctionLiteral {
+    this.expectPeek(TokenKind.LParen);
+
+    const parameters = this.parseFunctionParameters();
+
+    this.expectPeek(TokenKind.LBrace);
+
+    const body = this.parseBlockStatement();
+
+    return {
+      kind: ASTKind.FunctionLiteral,
+      parameters,
+      body
+    };
+  }
+
+  private parseFunctionParameters(): Identifier[] {
+    const parameters: Identifier[] = [];
+
+    if (this.peekTokenIs(TokenKind.RParen)) {
+      this.nextToken();
+      return parameters;
+    }
+
+    this.nextToken();
+
+    const identifier: Identifier = {
+      kind: ASTKind.Identifier,
+      value: this.curToken.literal
+    };
+
+    parameters.push(identifier);
+
+    while (this.peekTokenIs(TokenKind.Comma)) {
+      this.nextToken();
+      this.nextToken();
+
+      const identifier: Identifier = {
+        kind: ASTKind.Identifier,
+        value: this.curToken.literal
+      };
+
+      parameters.push(identifier);
+    }
+
+    this.expectPeek(TokenKind.RParen);
+
+    return parameters;
   }
 
   private parseIfExpression(): IfExpression {

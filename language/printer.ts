@@ -8,6 +8,10 @@ function print(node: Node): string {
       return String(node.value);
     case ASTKind.ExpressionStatement:
       return print(node.expression) + ";";
+    case ASTKind.FunctionLiteral: {
+      const params = node.parameters.map(print).join(", ");
+      return `fn(${params}) {\n  ${print(node.body)}\n}`;
+    }
     case ASTKind.Identifier:
       return node.value;
     case ASTKind.IfExpression:

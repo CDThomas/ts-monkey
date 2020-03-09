@@ -100,7 +100,7 @@ describe("parsing", () => {
     });
   });
 
-  test.only("if expressions with alternatives", () => {
+  test("if expressions with alternatives", () => {
     const input = "if (x < y) { x } else { y }";
 
     const AST = parse(input);
@@ -230,6 +230,112 @@ describe("parsing", () => {
             expression: {
               kind: ASTKind.Bool,
               value: false
+            }
+          }
+        ]
+      });
+    });
+
+    test("function literals", () => {
+      const input = "fn(x, y) { x + y }";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.FunctionLiteral,
+              parameters: [
+                {
+                  kind: ASTKind.Identifier,
+                  value: "x"
+                },
+                {
+                  kind: ASTKind.Identifier,
+                  value: "y"
+                }
+              ],
+              body: {
+                kind: ASTKind.BlockStatement,
+                statements: [
+                  {
+                    kind: ASTKind.ExpressionStatement,
+                    expression: {
+                      kind: ASTKind.InfixExpression,
+                      left: { kind: ASTKind.Identifier, value: "x" },
+                      operator: "+",
+                      right: { kind: ASTKind.Identifier, value: "y" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      });
+    });
+
+    test("function literals with one param", () => {
+      const input = "fn(x) { x }";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.FunctionLiteral,
+              parameters: [
+                {
+                  kind: ASTKind.Identifier,
+                  value: "x"
+                }
+              ],
+              body: {
+                kind: ASTKind.BlockStatement,
+                statements: [
+                  {
+                    kind: ASTKind.ExpressionStatement,
+                    expression: {
+                      kind: ASTKind.Identifier,
+                      value: "x"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      });
+    });
+
+    test("function literals with no params", () => {
+      const input = "fn() { 1 }";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.FunctionLiteral,
+              parameters: [],
+              body: {
+                kind: ASTKind.BlockStatement,
+                statements: [
+                  {
+                    kind: ASTKind.ExpressionStatement,
+                    expression: {
+                      kind: ASTKind.Integer,
+                      value: 1
+                    }
+                  }
+                ]
+              }
             }
           }
         ]
