@@ -2,6 +2,7 @@ export enum ASTKind {
   BlockStatement = "BLOCK_STATEMENT",
   Bool = "BOOL",
   ExpressionStatement = "EXPRESSION",
+  FunctionLiteral = "FUNCTION_LITERAL",
   Identifier = "IDENTIFIER",
   IfExpression = "IF_EXPRESSION",
   InfixExpression = "INFIX_EXPRESSION",
@@ -22,6 +23,7 @@ export type Statement =
 
 export type Expression =
   | Bool
+  | FunctionLiteral
   | Identifier
   | IfExpression
   | Integer
@@ -61,6 +63,12 @@ export type ReturnStatment = {
 export type Bool = {
   kind: ASTKind.Bool;
   value: boolean;
+};
+
+export type FunctionLiteral = {
+  kind: ASTKind.FunctionLiteral;
+  parameters: Identifier[];
+  body: BlockStatement;
 };
 
 export type Identifier = {

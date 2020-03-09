@@ -3,6 +3,7 @@ import {
   BlockStatement,
   Bool,
   ExpressionStatement,
+  FunctionLiteral,
   Identifier,
   IfExpression,
   InfixExpression,
@@ -58,6 +59,74 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("false;");
+  });
+
+  test("function literals", () => {
+    const node: FunctionLiteral = {
+      kind: ASTKind.FunctionLiteral,
+      parameters: [
+        { kind: ASTKind.Identifier, value: "x" },
+        { kind: ASTKind.Identifier, value: "y" }
+      ],
+      body: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.InfixExpression,
+              left: { kind: ASTKind.Identifier, value: "x" },
+              operator: "+",
+              right: { kind: ASTKind.Identifier, value: "y" }
+            }
+          }
+        ]
+      }
+    };
+
+    expect(print(node)).toBe("fn(x, y) {\n  (x + y);\n}");
+  });
+
+  test("function literals with one param", () => {
+    const node: FunctionLiteral = {
+      kind: ASTKind.FunctionLiteral,
+      parameters: [{ kind: ASTKind.Identifier, value: "x" }],
+      body: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.Identifier,
+              value: "x"
+            }
+          }
+        ]
+      }
+    };
+
+    expect(print(node)).toBe("fn(x) {\n  x;\n}");
+  });
+
+  test("function literals with no params", () => {
+    const node: FunctionLiteral = {
+      kind: ASTKind.FunctionLiteral,
+      parameters: [],
+      body: {
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.Integer,
+              value: 1
+            }
+          }
+        ]
+      }
+    };
+
+    expect(print(node)).toBe("fn() {\n  1;\n}");
   });
 
   test("identifiers", () => {
