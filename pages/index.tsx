@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React from "react";
+import React, { useState, useCallback } from "react";
+import debounce from "debounce";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
 import { Program } from "../language/ast";
@@ -18,15 +19,30 @@ let add = fn(x, y) {
 let result = add(five, ten);
 `;
 
-function parse(input: string): Program {
+const parse = (input: string): Program => {
   const lexer = new Lexer(input);
   const parser = new Parser(lexer);
   return parser.parseProgram();
-}
+};
 
 function Home(): React.ReactElement {
-  const [input, setInput] = React.useState(defaultInput);
-  const output = parse(input);
+  const [input, setInput] = useState(defaultInput);
+  const [output, setOutput] = useState<Program>(parse(defaultInput));
+  const doParse = useCallback(
+    debounce((value: string) => {
+      try {
+        const output = parse(value);
+        setOutput(output);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 200),
+    []
+  );
+  const handleChange = useCallback((value: string): void => {
+    setInput(value);
+    doParse(value);
+  }, []);
 
   return (
     <div>
@@ -36,7 +52,7 @@ function Home(): React.ReactElement {
       </Head>
 
       <main className={styles.container}>
-        <Editor value={input} onChange={(input): void => setInput(input)} />
+        <Editor value={input} onChange={handleChange} />
         <Editor readOnly value={JSON.stringify(output, null, 2)} />
       </main>
     </div>
