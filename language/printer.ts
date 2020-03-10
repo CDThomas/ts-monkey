@@ -33,7 +33,7 @@ function print(node: Node): string {
     case ASTKind.Program:
       return node.statements.map(print).join("\n");
     case ASTKind.Return:
-      return "return;";
+      return `return ${print(node.returnValue)};`;
   }
 }
 

@@ -53,9 +53,18 @@ describe("parsing", () => {
     expect(AST).toEqual({
       kind: ASTKind.Program,
       statements: [
-        { kind: ASTKind.Return },
-        { kind: ASTKind.Return },
-        { kind: ASTKind.Return }
+        {
+          kind: ASTKind.Return,
+          returnValue: { kind: ASTKind.Integer, value: 5 }
+        },
+        {
+          kind: ASTKind.Return,
+          returnValue: { kind: ASTKind.Integer, value: 10 }
+        },
+        {
+          kind: ASTKind.Return,
+          returnValue: { kind: ASTKind.Integer, value: 993322 }
+        }
       ]
     });
   });

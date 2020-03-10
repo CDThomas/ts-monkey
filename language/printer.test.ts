@@ -311,10 +311,11 @@ describe("printing", () => {
 
   test("return statements", () => {
     const node: ReturnStatment = {
-      kind: ASTKind.Return
+      kind: ASTKind.Return,
+      returnValue: { kind: ASTKind.Integer, value: 9 }
     };
 
-    expect(print(node)).toBe("return;");
+    expect(print(node)).toBe("return 9;");
   });
 
   test("programs", () => {
