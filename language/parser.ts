@@ -1,6 +1,8 @@
 import {
   ASTKind,
+  BlockStatement,
   Bool,
+  CallExpression,
   Expression,
   ExpressionStatement,
   FunctionLiteral,
@@ -12,14 +14,13 @@ import {
   PrefixExpression,
   Program,
   ReturnStatment,
-  Statement,
-  BlockStatement
+  Statement
 } from "./ast";
 import Lexer from "./lexer";
 import { Token, TokenKind } from "./token";
 
 type PrefixParseFunction = () => Expression;
-type InfixParseFunction = (expression: Expression) => InfixExpression;
+type InfixParseFunction = (expression: Expression) => Expression;
 
 enum Precedence {
   Lowest,
@@ -39,7 +40,8 @@ const precedences: Partial<Record<TokenKind, Precedence>> = {
   [TokenKind.Plus]: Precedence.Sum,
   [TokenKind.Minus]: Precedence.Sum,
   [TokenKind.Slash]: Precedence.Product,
-  [TokenKind.Asterisk]: Precedence.Product
+  [TokenKind.Asterisk]: Precedence.Product,
+  [TokenKind.LParen]: Precedence.Call
 };
 
 class Parser {
@@ -55,6 +57,7 @@ class Parser {
     this.peekToken = this.lexer.nextToken();
 
     this.parseBool = this.parseBool.bind(this);
+    this.parseCallExpression = this.parseCallExpression.bind(this);
     this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseIfExpression = this.parseIfExpression.bind(this);
@@ -83,7 +86,8 @@ class Parser {
       [TokenKind.Equal]: this.parseInfixExpression,
       [TokenKind.NotEqual]: this.parseInfixExpression,
       [TokenKind.LessThan]: this.parseInfixExpression,
-      [TokenKind.GreaterThan]: this.parseInfixExpression
+      [TokenKind.GreaterThan]: this.parseInfixExpression,
+      [TokenKind.LParen]: this.parseCallExpression
     };
   }
 
@@ -235,6 +239,47 @@ class Parser {
       kind: ASTKind.Bool,
       value: this.curTokenIs(TokenKind.True)
     };
+  }
+
+  private parseCallExpression(expression: Expression): CallExpression {
+    if (
+      expression.kind !== ASTKind.Identifier &&
+      expression.kind !== ASTKind.FunctionLiteral
+    ) {
+      throw new Error(
+        `parse call expression expected call to be on an identifier or function literal but received ${expression.kind}`
+      );
+    }
+
+    const args = this.parseCallArguments();
+
+    return {
+      kind: ASTKind.CallExpression,
+      function: expression,
+      arguments: args
+    };
+  }
+
+  private parseCallArguments(): Expression[] {
+    const args: Expression[] = [];
+
+    if (this.peekTokenIs(TokenKind.RParen)) {
+      this.nextToken();
+      return args;
+    }
+
+    this.nextToken();
+    args.push(this.parseExpression(Precedence.Lowest));
+
+    while (this.peekTokenIs(TokenKind.Comma)) {
+      this.nextToken();
+      this.nextToken();
+      args.push(this.parseExpression(Precedence.Lowest));
+    }
+
+    this.expectPeek(TokenKind.RParen);
+
+    return args;
   }
 
   private parseIdentifier(): Identifier {
