@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "codemirror": "^5.51.0",
+    "debounce": "^1.2.0",
     "next": "latest",
     "react": "16.12.0",
     "react-codemirror2": "^6.0.0",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.1.0",
     "@testing-library/react": "^9.4.0",
+    "@types/debounce": "^1.2.0",
     "@types/node": "^13.7.0",
     "@types/react": "^16.9.19",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
