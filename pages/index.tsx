@@ -3,8 +3,9 @@ import Head from "next/head";
 import React from "react";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
+import { Program } from "../language/ast";
 import Lexer from "../language/lexer";
-import { Token, TokenKind } from "../language/token";
+import Parser from "../language/parser";
 import styles from "./index.module.css";
 
 const defaultInput = `let five = 5;
@@ -17,16 +18,15 @@ let add = fn(x, y) {
 let result = add(five, ten);
 `;
 
-function readTokens(lexer: Lexer, tokens: Token[] = []): Token[] {
-  const token = lexer.nextToken();
-
-  if (token.kind === TokenKind.EOF) return tokens;
-  return readTokens(lexer, [...tokens, token]);
+function parse(input: string): Program {
+  const lexer = new Lexer(input);
+  const parser = new Parser(lexer);
+  return parser.parseProgram();
 }
 
 function Home(): React.ReactElement {
   const [input, setInput] = React.useState(defaultInput);
-  const output = readTokens(new Lexer(input));
+  const output = parse(input);
 
   return (
     <div>
