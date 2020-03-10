@@ -538,7 +538,7 @@ describe("parsing", () => {
       {
         input: "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
         expected: "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)));",
-        description: "Call expression with multiple expression types as args;"
+        description: "Call expression with multiple expression types as args"
       },
       {
         input: "add(a + b + c * d / f + g)",
