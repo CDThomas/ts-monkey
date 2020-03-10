@@ -2,6 +2,7 @@ import {
   ASTKind,
   BlockStatement,
   Bool,
+  CallExpression,
   ExpressionStatement,
   FunctionLiteral,
   Identifier,
@@ -10,8 +11,8 @@ import {
   Integer,
   LetStatement,
   PrefixExpression,
-  ReturnStatment,
-  Program
+  Program,
+  ReturnStatment
 } from "./ast";
 import { print } from "./printer";
 
@@ -47,6 +48,70 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("true");
+  });
+
+  test("call expressions with no arguments", () => {
+    const node: CallExpression = {
+      kind: ASTKind.CallExpression,
+      function: {
+        kind: ASTKind.Identifier,
+        value: "f"
+      },
+      arguments: []
+    };
+
+    expect(print(node)).toBe("f()");
+  });
+
+  test("call expressions with one argument", () => {
+    const node: CallExpression = {
+      kind: ASTKind.CallExpression,
+      function: {
+        kind: ASTKind.Identifier,
+        value: "f"
+      },
+      arguments: [{ kind: ASTKind.Identifier, value: "a" }]
+    };
+
+    expect(print(node)).toBe("f(a)");
+  });
+
+  test("call expressions with multiple arguments", () => {
+    const node: CallExpression = {
+      kind: ASTKind.CallExpression,
+      function: {
+        kind: ASTKind.Identifier,
+        value: "f"
+      },
+      arguments: [
+        { kind: ASTKind.Identifier, value: "a" },
+        { kind: ASTKind.Identifier, value: "b" }
+      ]
+    };
+
+    expect(print(node)).toBe("f(a, b)");
+  });
+
+  test("call expressions on function literals", () => {
+    const node: CallExpression = {
+      kind: ASTKind.CallExpression,
+      function: {
+        kind: ASTKind.FunctionLiteral,
+        parameters: [],
+        body: {
+          kind: ASTKind.BlockStatement,
+          statements: [
+            {
+              kind: ASTKind.ExpressionStatement,
+              expression: { kind: ASTKind.Integer, value: 1 }
+            }
+          ]
+        }
+      },
+      arguments: []
+    };
+
+    expect(print(node)).toBe("fn() {\n  1;\n}()");
   });
 
   test("expression statements", () => {

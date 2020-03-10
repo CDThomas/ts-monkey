@@ -235,8 +235,10 @@ describe("parsing", () => {
         ]
       });
     });
+  });
 
-    test("function literals", () => {
+  describe("function literals", () => {
+    test("with multiple params", () => {
       const input = "fn(x, y) { x + y }";
       const AST = parse(input);
 
@@ -277,7 +279,7 @@ describe("parsing", () => {
       });
     });
 
-    test("function literals with one param", () => {
+    test("with one param", () => {
       const input = "fn(x) { x }";
       const AST = parse(input);
 
@@ -312,7 +314,7 @@ describe("parsing", () => {
       });
     });
 
-    test("function literals with no params", () => {
+    test("with no params", () => {
       const input = "fn() { 1 }";
       const AST = parse(input);
 
@@ -336,6 +338,103 @@ describe("parsing", () => {
                   }
                 ]
               }
+            }
+          }
+        ]
+      });
+    });
+  });
+
+  describe("call expressions", () => {
+    test("with no args", () => {
+      const input = "f()";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.CallExpression,
+              function: {
+                kind: ASTKind.Identifier,
+                value: "f"
+              },
+              arguments: []
+            }
+          }
+        ]
+      });
+    });
+
+    test("with one arg", () => {
+      const input = "f(a)";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.CallExpression,
+              function: {
+                kind: ASTKind.Identifier,
+                value: "f"
+              },
+              arguments: [{ kind: ASTKind.Identifier, value: "a" }]
+            }
+          }
+        ]
+      });
+    });
+
+    test("with multiple args", () => {
+      const input = "f(a, b)";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.CallExpression,
+              function: {
+                kind: ASTKind.Identifier,
+                value: "f"
+              },
+              arguments: [
+                { kind: ASTKind.Identifier, value: "a" },
+                { kind: ASTKind.Identifier, value: "b" }
+              ]
+            }
+          }
+        ]
+      });
+    });
+
+    test("on function literals", () => {
+      const input = "fn(){}()";
+      const AST = parse(input);
+
+      expect(AST).toEqual({
+        kind: ASTKind.Program,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.CallExpression,
+              function: {
+                kind: ASTKind.FunctionLiteral,
+                parameters: [],
+                body: {
+                  kind: ASTKind.BlockStatement,
+                  statements: []
+                }
+              },
+              arguments: []
             }
           }
         ]
@@ -430,6 +529,22 @@ describe("parsing", () => {
         expected: "(!(true == true));",
         description:
           "Grouped expressions with comparison operator and infix operator"
+      },
+      {
+        input: "a + add(b * c) + d",
+        expected: "((a + add((b * c))) + d);",
+        description: "Addition and call expression"
+      },
+      {
+        input: "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+        expected: "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)));",
+        description: "Call expression with multiple expression types as args"
+      },
+      {
+        input: "add(a + b + c * d / f + g)",
+        expected: "add((((a + b) + ((c * d) / f)) + g));",
+        description:
+          "Call expression with multiple arithmetic operators in one arg"
       }
     ];
 

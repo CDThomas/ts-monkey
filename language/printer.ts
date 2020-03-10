@@ -6,6 +6,10 @@ function print(node: Node): string {
       return node.statements.map(print).join("\n");
     case ASTKind.Bool:
       return String(node.value);
+    case ASTKind.CallExpression: {
+      const args = node.arguments.map(print).join(", ");
+      return `${print(node.function)}(${args})`;
+    }
     case ASTKind.ExpressionStatement:
       return print(node.expression) + ";";
     case ASTKind.FunctionLiteral: {
