@@ -132,28 +132,33 @@ class Parser {
     };
 
     this.expectPeek(TokenKind.Assign);
+    this.nextToken();
 
-    // TODO: don't skip expressions
-    while (!this.curTokenIs(TokenKind.Semicolon)) {
+    const value = this.parseExpression(Precedence.Lowest);
+
+    if (this.peekTokenIs(TokenKind.Semicolon)) {
       this.nextToken();
     }
 
     return {
       kind: ASTKind.Let,
-      name
+      name,
+      value
     };
   }
 
   private parseReturnStatement(): ReturnStatment {
     this.nextToken();
 
-    // TODO: don't skip expressions
-    while (!this.curTokenIs(TokenKind.Semicolon)) {
+    const returnValue = this.parseExpression(Precedence.Lowest);
+
+    if (this.peekTokenIs(TokenKind.Semicolon)) {
       this.nextToken();
     }
 
     return {
-      kind: ASTKind.Return
+      kind: ASTKind.Return,
+      returnValue
     };
   }
 

@@ -286,10 +286,14 @@ describe("printing", () => {
       name: {
         kind: ASTKind.Identifier,
         value: "n"
+      },
+      value: {
+        kind: ASTKind.Integer,
+        value: 2
       }
     };
 
-    expect(print(node)).toBe("let n;");
+    expect(print(node)).toBe("let n = 2;");
   });
 
   test("prefix expressions", () => {
@@ -307,10 +311,11 @@ describe("printing", () => {
 
   test("return statements", () => {
     const node: ReturnStatment = {
-      kind: ASTKind.Return
+      kind: ASTKind.Return,
+      returnValue: { kind: ASTKind.Integer, value: 9 }
     };
 
-    expect(print(node)).toBe("return;");
+    expect(print(node)).toBe("return 9;");
   });
 
   test("programs", () => {
