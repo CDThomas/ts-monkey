@@ -22,9 +22,21 @@ describe("parsing", () => {
     expect(AST).toEqual({
       kind: ASTKind.Program,
       statements: [
-        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "x" } },
-        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "y" } },
-        { kind: ASTKind.Let, name: { kind: "IDENTIFIER", value: "foobar" } }
+        {
+          kind: ASTKind.Let,
+          name: { kind: "IDENTIFIER", value: "x" },
+          value: { kind: ASTKind.Integer, value: 5 }
+        },
+        {
+          kind: ASTKind.Let,
+          name: { kind: "IDENTIFIER", value: "y" },
+          value: { kind: ASTKind.Integer, value: 10 }
+        },
+        {
+          kind: ASTKind.Let,
+          name: { kind: "IDENTIFIER", value: "foobar" },
+          value: { kind: ASTKind.Integer, value: 838383 }
+        }
       ]
     });
   });

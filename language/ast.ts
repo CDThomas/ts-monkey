@@ -52,7 +52,7 @@ export type ExpressionStatement = {
 export type LetStatement = {
   kind: ASTKind.Let;
   name: Identifier;
-  value?: Expression;
+  value: Expression;
 };
 
 export type ReturnStatment = {
