@@ -1,7 +1,7 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Integer, Obj } from "./object";
+import { Bool, Integer, Obj } from "./object";
 
 function doEval(input: string): Obj {
   const lexer = new Lexer(input);
@@ -25,6 +25,20 @@ describe("evaluating", () => {
         expect(actual).toBeInstanceOf(Integer);
         expect((actual as Integer).value).toBe(expected);
       });
+    });
+  });
+
+  describe("boolean expressions", () => {
+    test("true evaluates to the correct value", () => {
+      const result = doEval("true");
+      expect(result).toBeInstanceOf(Bool);
+      expect((result as Bool).value).toBe(true);
+    });
+
+    test("false evaluates to the correct value", () => {
+      const result = doEval("false");
+      expect(result).toBeInstanceOf(Bool);
+      expect((result as Bool).value).toBe(false);
     });
   });
 });
