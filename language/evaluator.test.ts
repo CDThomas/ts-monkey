@@ -42,7 +42,7 @@ describe("evaluating", () => {
       expect((result as Bool).value).toBe(false);
     });
 
-    test("throw an error when use with the minus prefix operator", () => {
+    test("throw an error when used with the minus prefix operator", () => {
       expect(() => doEval("-true")).toThrow(
         "evaluation error: minus prefix operator not implemented for true"
       );
