@@ -11,6 +11,12 @@ export function evaluate(node: Node): Obj {
       return node.value ? TRUE : FALSE;
     case ASTKind.ExpressionStatement:
       return evaluate(node.expression);
+    case ASTKind.InfixExpression: {
+      const left = evaluate(node.left);
+      const right = evaluate(node.right);
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return evalInfixExpression(node.operator, left, right);
+    }
     case ASTKind.Integer:
       return new Integer(node.value);
     case ASTKind.PrefixExpression: {
@@ -24,6 +30,41 @@ export function evaluate(node: Node): Obj {
   }
 
   throw new Error(`eval not implemented for ${node.kind}`);
+}
+
+function evalInfixExpression(operator: string, left: Obj, right: Obj): Obj {
+  if (left instanceof Integer && right instanceof Integer) {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return evalIntegerInfixOperator(operator, left, right);
+  }
+
+  throw new Error(
+    `evaluation error: ${operator} prefix operator not implemented for ${left.inspect()} and ${right.inspect()}`
+  );
+}
+
+function evalIntegerInfixOperator(
+  operator: string,
+  left: Integer,
+  right: Integer
+): Integer {
+  switch (operator) {
+    case "+":
+      return new Integer(left.value + right.value);
+    case "-":
+      return new Integer(left.value - right.value);
+    case "*":
+      return new Integer(left.value * right.value);
+    case "/":
+      if (right.value === 0) {
+        throw new Error("evaluation error: cannot divide by zero");
+      }
+      return new Integer(Math.floor(left.value / right.value));
+  }
+
+  throw new Error(
+    `evaluation error: ${operator} prefix operator not implemented for integers`
+  );
 }
 
 function evalPrefixExpression(operator: string, right: Obj): Obj {
