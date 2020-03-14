@@ -52,16 +52,34 @@ describe("evaluating", () => {
   });
 
   describe("boolean expressions", () => {
-    test("true evaluates to true", () => {
-      const result = doEval("true");
-      expect(result).toBeInstanceOf(Bool);
-      expect((result as Bool).value).toBe(true);
-    });
+    const cases = [
+      { input: "true", expected: true },
+      { input: "false", expected: false },
+      { input: "1 < 2", expected: true },
+      { input: "1 > 2", expected: false },
+      { input: "1 < 1", expected: false },
+      { input: "1 > 1", expected: false },
+      { input: "1 == 1", expected: true },
+      { input: "1 != 1", expected: false },
+      { input: "1 == 2", expected: false },
+      { input: "1 != 2", expected: true },
+      { input: "true == true", expected: true },
+      { input: "false == false", expected: true },
+      { input: "true == false", expected: false },
+      { input: "true != false", expected: true },
+      { input: "false != true", expected: true },
+      { input: "(1 < 2) == true", expected: true },
+      { input: "(1 < 2) == false", expected: false },
+      { input: "(1 > 2) == true", expected: false },
+      { input: "(1 > 2) == false", expected: true }
+    ];
 
-    test("false evaluates to false", () => {
-      const result = doEval("false");
-      expect(result).toBeInstanceOf(Bool);
-      expect((result as Bool).value).toBe(false);
+    cases.forEach(({ input, expected }) => {
+      test(`${input} evaluates to ${expected}`, () => {
+        const result = doEval(input);
+        expect(result).toBeInstanceOf(Bool);
+        expect((result as Bool).value).toBe(expected);
+      });
     });
 
     test("throw an error when used with the minus prefix operator", () => {

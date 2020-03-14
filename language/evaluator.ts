@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { ASTKind, Node, Statement } from "./ast";
 import { Integer, Null, Obj, Bool } from "./object";
 
@@ -8,24 +9,21 @@ const NULL = new Null();
 export function evaluate(node: Node): Obj {
   switch (node.kind) {
     case ASTKind.Bool:
-      return node.value ? TRUE : FALSE;
+      return nativeBooleanToBooleanObject(node.value);
     case ASTKind.ExpressionStatement:
       return evaluate(node.expression);
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left);
       const right = evaluate(node.right);
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return evalInfixExpression(node.operator, left, right);
     }
     case ASTKind.Integer:
       return new Integer(node.value);
     case ASTKind.PrefixExpression: {
       const right = evaluate(node.right);
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return evalPrefixExpression(node.operator, right);
     }
     case ASTKind.Program:
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return evalStatements(node.statements);
   }
 
@@ -33,21 +31,38 @@ export function evaluate(node: Node): Obj {
 }
 
 function evalInfixExpression(operator: string, left: Obj, right: Obj): Obj {
+  if (left instanceof Bool && right instanceof Bool) {
+    return evalBooleanInfixOperator(operator, left, right);
+  }
   if (left instanceof Integer && right instanceof Integer) {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return evalIntegerInfixOperator(operator, left, right);
   }
 
   throw new Error(
-    `evaluation error: ${operator} prefix operator not implemented for ${left.inspect()} and ${right.inspect()}`
+    `evaluation error: ${operator} infix operator not implemented for ${left.inspect()} and ${right.inspect()}`
   );
+}
+
+function evalBooleanInfixOperator(
+  operator: string,
+  left: Bool,
+  right: Bool
+): Bool {
+  switch (operator) {
+    case "==":
+      return nativeBooleanToBooleanObject(left === right);
+    case "!=":
+      return nativeBooleanToBooleanObject(left !== right);
+  }
+
+  throw new Error(`evaluation error: ${operator} not implemented for booleans`);
 }
 
 function evalIntegerInfixOperator(
   operator: string,
   left: Integer,
   right: Integer
-): Integer {
+): Integer | Bool {
   switch (operator) {
     case "+":
       return new Integer(left.value + right.value);
@@ -60,6 +75,14 @@ function evalIntegerInfixOperator(
         throw new Error("evaluation error: cannot divide by zero");
       }
       return new Integer(Math.floor(left.value / right.value));
+    case "<":
+      return nativeBooleanToBooleanObject(left.value < right.value);
+    case ">":
+      return nativeBooleanToBooleanObject(left.value > right.value);
+    case "==":
+      return nativeBooleanToBooleanObject(left.value == right.value);
+    case "!=":
+      return nativeBooleanToBooleanObject(left.value != right.value);
   }
 
   throw new Error(
@@ -70,10 +93,8 @@ function evalIntegerInfixOperator(
 function evalPrefixExpression(operator: string, right: Obj): Obj {
   switch (operator) {
     case "!":
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return evalBangOperatorExpression(right);
     case "-":
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return evalMinusPrefixOperatorExpression(right);
     default:
       return NULL;
@@ -111,4 +132,8 @@ function evalStatements(statements: Statement[]): Obj {
   }
 
   return result;
+}
+
+function nativeBooleanToBooleanObject(bool: boolean): Bool {
+  return bool ? TRUE : FALSE;
 }
