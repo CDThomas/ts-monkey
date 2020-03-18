@@ -1,7 +1,7 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Integer, Obj } from "./object";
+import { Bool, Integer, Null, Obj } from "./object";
 
 function doEval(input: string): Obj {
   const lexer = new Lexer(input);
@@ -12,6 +12,53 @@ function doEval(input: string): Obj {
 }
 
 describe("evaluating", () => {
+  describe("if else expressions", () => {
+    const cases = [
+      {
+        input: "if (true) { 10 }",
+        expected: 10,
+        description: "literal true condition"
+      },
+      {
+        input: "if (false) { 10 }",
+        description: "literal false condition"
+      },
+      { input: "if (1) { 10 }", expected: 10, description: "truthy condition" },
+      {
+        input: "if (1 < 2) { 10 }",
+        expected: 10,
+        description: "condition expression that evaluates to true"
+      },
+      {
+        input: "if (1 > 2) { 10 }",
+        description: "condition expression that evaluates to false"
+      },
+      {
+        input: "if (1 < 2) { 10 } else { 20 }",
+        expected: 10,
+        description: "true condition with alternative"
+      },
+      {
+        input: "if (1 > 2) { 10 } else { 20 }",
+        expected: 20,
+        description: "false condition with alternative"
+      }
+    ];
+
+    cases.forEach(({ input, expected, description }) => {
+      test(`${description}: ${input}`, () => {
+        expect.assertions(1);
+        const result = doEval(input);
+
+        if (expected) {
+          expect(result).toEqual(new Integer(expected));
+        } else {
+          expect(result).toBeInstanceOf(Null);
+        }
+      });
+    });
+  });
+
   describe("integer expressions", () => {
     const cases = [
       { input: "0", expected: 0 },

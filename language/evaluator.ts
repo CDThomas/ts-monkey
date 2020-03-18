@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { ASTKind, Node, Statement } from "./ast";
+import { ASTKind, IfExpression, Node, Statement } from "./ast";
 import { Integer, Null, Obj, Bool } from "./object";
 
 const TRUE = new Bool(true);
@@ -8,8 +8,12 @@ const NULL = new Null();
 
 export function evaluate(node: Node): Obj {
   switch (node.kind) {
+    case ASTKind.BlockStatement:
+      return evalStatements(node.statements);
     case ASTKind.Bool:
       return nativeBooleanToBooleanObject(node.value);
+    case ASTKind.IfExpression:
+      return evalIfExpression(node);
     case ASTKind.ExpressionStatement:
       return evaluate(node.expression);
     case ASTKind.InfixExpression: {
@@ -28,6 +32,18 @@ export function evaluate(node: Node): Obj {
   }
 
   throw new Error(`eval not implemented for ${node.kind}`);
+}
+
+function evalIfExpression(node: IfExpression): Obj {
+  const condition = evaluate(node.condition);
+
+  if (isTruthy(condition)) {
+    return evaluate(node.consequence);
+  }
+  if (node.alternative) {
+    return evaluate(node.alternative);
+  }
+  return NULL;
 }
 
 function evalInfixExpression(operator: string, left: Obj, right: Obj): Obj {
@@ -136,4 +152,8 @@ function evalStatements(statements: Statement[]): Obj {
 
 function nativeBooleanToBooleanObject(bool: boolean): Bool {
   return bool ? TRUE : FALSE;
+}
+
+function isTruthy(obj: Obj): boolean {
+  return obj !== FALSE && obj !== NULL;
 }
