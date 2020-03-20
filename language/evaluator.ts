@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ASTKind, IfExpression, Node, Statement } from "./ast";
-import { Bool, Integer, Null, Obj, ReturnValue } from "./object";
+import { Bool, Err, Integer, Null, Obj, ReturnValue } from "./object";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -18,17 +18,25 @@ export function evaluate(node: Node): Obj {
       return evaluate(node.expression);
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left);
+      if (isError(left)) return left;
+
       const right = evaluate(node.right);
+      if (isError(right)) return right;
+
       return evalInfixExpression(node.operator, left, right);
     }
     case ASTKind.Integer:
       return new Integer(node.value);
     case ASTKind.PrefixExpression: {
       const right = evaluate(node.right);
+      if (isError(right)) return right;
+
       return evalPrefixExpression(node.operator, right);
     }
     case ASTKind.Return: {
       const value = evaluate(node.returnValue);
+      if (isError(value)) return value;
+
       return new ReturnValue(value);
     }
     case ASTKind.Program:
@@ -41,12 +49,18 @@ export function evaluate(node: Node): Obj {
 function evalIfExpression(node: IfExpression): Obj {
   const condition = evaluate(node.condition);
 
+  if (isError(condition)) {
+    return condition;
+  }
+
   if (isTruthy(condition)) {
     return evaluate(node.consequence);
   }
+
   if (node.alternative) {
     return evaluate(node.alternative);
   }
+
   return NULL;
 }
 
@@ -58,8 +72,8 @@ function evalInfixExpression(operator: string, left: Obj, right: Obj): Obj {
     return evalIntegerInfixOperator(operator, left, right);
   }
 
-  throw new Error(
-    `evaluation error: ${operator} infix operator not implemented for ${left.inspect()} and ${right.inspect()}`
+  return new Err(
+    `type mismatch: ${left.inspect()} ${operator} ${right.inspect()}`
   );
 }
 
@@ -67,7 +81,7 @@ function evalBooleanInfixOperator(
   operator: string,
   left: Bool,
   right: Bool
-): Bool {
+): Bool | Err {
   switch (operator) {
     case "==":
       return nativeBooleanToBooleanObject(left === right);
@@ -75,14 +89,16 @@ function evalBooleanInfixOperator(
       return nativeBooleanToBooleanObject(left !== right);
   }
 
-  throw new Error(`evaluation error: ${operator} not implemented for booleans`);
+  return new Err(
+    `unknown operator: ${left.inspect()} ${operator} ${right.inspect()}`
+  );
 }
 
 function evalIntegerInfixOperator(
   operator: string,
   left: Integer,
   right: Integer
-): Integer | Bool {
+): Integer | Bool | Err {
   switch (operator) {
     case "+":
       return new Integer(left.value + right.value);
@@ -105,8 +121,8 @@ function evalIntegerInfixOperator(
       return nativeBooleanToBooleanObject(left.value != right.value);
   }
 
-  throw new Error(
-    `evaluation error: ${operator} prefix operator not implemented for integers`
+  return new Err(
+    `unknown operator: ${left.inspect()} ${operator} ${right.inspect()}`
   );
 }
 
@@ -117,7 +133,7 @@ function evalPrefixExpression(operator: string, right: Obj): Obj {
     case "-":
       return evalMinusPrefixOperatorExpression(right);
     default:
-      return NULL;
+      return new Err(`unknown operator: ${operator}${right.inspect()}`);
   }
 }
 
@@ -139,9 +155,7 @@ function evalMinusPrefixOperatorExpression(right: Obj): Obj {
     return new Integer(-right.value);
   }
 
-  throw new Error(
-    `evaluation error: minus prefix operator not implemented for ${right.inspect()}`
-  );
+  return new Err(`unknown operator: -${right.inspect()}`);
 }
 
 function evalStatements(statements: Statement[]): Obj {
@@ -150,7 +164,7 @@ function evalStatements(statements: Statement[]): Obj {
   for (const statement of statements) {
     result = evaluate(statement);
 
-    if (result instanceof ReturnValue) {
+    if (result instanceof Err || result instanceof ReturnValue) {
       return result;
     }
   }
@@ -164,6 +178,9 @@ function evalProgram(statements: Statement[]): Obj {
   for (const statement of statements) {
     result = evaluate(statement);
 
+    if (result instanceof Err) {
+      return result;
+    }
     if (result instanceof ReturnValue) {
       return result.value;
     }
@@ -178,4 +195,8 @@ function nativeBooleanToBooleanObject(bool: boolean): Bool {
 
 function isTruthy(obj: Obj): boolean {
   return obj !== FALSE && obj !== NULL;
+}
+
+function isError(obj: Obj): boolean {
+  return obj instanceof Err;
 }

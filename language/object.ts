@@ -14,6 +14,18 @@ class Bool implements Obj {
   }
 }
 
+class Err implements Obj {
+  message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+
+  inspect(): string {
+    return `Error: ${this.message}`;
+  }
+}
+
 class Integer implements Obj {
   value: number;
 
@@ -44,4 +56,4 @@ class ReturnValue implements Obj {
   }
 }
 
-export { Bool, Integer, Null, ReturnValue };
+export { Bool, Err, Integer, Null, ReturnValue };

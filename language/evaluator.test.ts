@@ -1,7 +1,7 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Integer, Null, Obj } from "./object";
+import { Bool, Err, Integer, Null, Obj } from "./object";
 
 function doEval(input: string): Obj {
   const lexer = new Lexer(input);
@@ -128,12 +128,6 @@ describe("evaluating", () => {
         expect((result as Bool).value).toBe(expected);
       });
     });
-
-    test("throw an error when used with the minus prefix operator", () => {
-      expect(() => doEval("-true")).toThrow(
-        "evaluation error: minus prefix operator not implemented for true"
-      );
-    });
   });
 
   describe("the bang prefix operator", () => {
@@ -216,6 +210,76 @@ describe("evaluating", () => {
         const result = doEval(input);
         expect(result).toBeInstanceOf(Integer);
         expect((result as Integer).value).toBe(expected);
+      });
+    });
+  });
+
+  describe("error handling", () => {
+    const cases = [
+      {
+        input: "5 + true;",
+        expected: "type mismatch: 5 + true",
+        description: "type mismatch"
+      },
+      {
+        input: "5 + true; 5;",
+        expected: "type mismatch: 5 + true",
+        description: "an error before another statement"
+      },
+      {
+        input: "-true",
+        expected: "unknown operator: -true",
+        description: "unknown operator in a prefix expression"
+      },
+      {
+        input: "true + false",
+        expected: "unknown operator: true + false",
+        description: "unknown operator in an infix expression"
+      },
+      {
+        input: "5; true + false; 5;",
+        expected: "unknown operator: true + false",
+        description: "an error between other statements"
+      },
+      {
+        input: "if (10 > 1) { true + false; }",
+        expected: "unknown operator: true + false",
+        description: "an error in a block statement"
+      },
+      {
+        input: `
+          if (10 > 1) {
+            if (10 > 1) {
+              return true + false;
+            }
+
+            return 1;
+          }
+        `,
+        expected: "unknown operator: true + false",
+        description: "an error in return in a nested block statement"
+      },
+      {
+        input: `
+          if (10 > 1) {
+            if (10 > 1) {
+              true + false;
+              return 1;
+            }
+
+            return 1;
+          }
+        `,
+        expected: "unknown operator: true + false",
+        description: "an error before a return in a nested block statement"
+      }
+    ];
+
+    cases.forEach(({ input, expected, description }) => {
+      test(description, () => {
+        const result = doEval(input);
+        expect(result).toBeInstanceOf(Err);
+        expect((result as Err).message).toBe(expected);
       });
     });
   });
