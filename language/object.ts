@@ -32,4 +32,16 @@ class Null implements Obj {
   }
 }
 
-export { Bool, Integer, Null };
+class ReturnValue implements Obj {
+  value: Obj;
+
+  constructor(value: Obj) {
+    this.value = value;
+  }
+
+  inspect(): string {
+    return this.value.inspect();
+  }
+}
+
+export { Bool, Integer, Null, ReturnValue };
