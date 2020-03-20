@@ -207,7 +207,7 @@ describe("evaluating", () => {
           }
         `,
         expected: 10,
-        description: "nested return values"
+        description: "returning in a nested block statement"
       }
     ];
 
