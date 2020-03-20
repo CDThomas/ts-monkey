@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ASTKind, IfExpression, Node, Statement } from "./ast";
-import { Integer, Null, Obj, Bool } from "./object";
+import { Bool, Integer, Null, Obj, ReturnValue } from "./object";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
@@ -27,8 +27,12 @@ export function evaluate(node: Node): Obj {
       const right = evaluate(node.right);
       return evalPrefixExpression(node.operator, right);
     }
+    case ASTKind.Return: {
+      const value = evaluate(node.returnValue);
+      return new ReturnValue(value);
+    }
     case ASTKind.Program:
-      return evalStatements(node.statements);
+      return evalProgram(node.statements);
   }
 
   throw new Error(`eval not implemented for ${node.kind}`);
@@ -145,6 +149,24 @@ function evalStatements(statements: Statement[]): Obj {
 
   for (const statement of statements) {
     result = evaluate(statement);
+
+    if (result instanceof ReturnValue) {
+      return result;
+    }
+  }
+
+  return result;
+}
+
+function evalProgram(statements: Statement[]): Obj {
+  let result: Obj = NULL;
+
+  for (const statement of statements) {
+    result = evaluate(statement);
+
+    if (result instanceof ReturnValue) {
+      return result.value;
+    }
   }
 
   return result;

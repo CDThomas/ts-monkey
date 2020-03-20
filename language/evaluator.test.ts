@@ -177,4 +177,46 @@ describe("evaluating", () => {
       });
     });
   });
+
+  describe("return statements", () => {
+    const cases = [
+      { input: "return 10;", expected: 10, description: "returning a literal" },
+      {
+        input: "return 10; 9;",
+        expected: 10,
+        description: "return before another statement"
+      },
+      {
+        input: "return 2 * 5; 9;",
+        expected: 10,
+        description: "returning an expression"
+      },
+      {
+        input: "9; return 2 * 5; 9;",
+        expected: 10,
+        description: "return between two other statements"
+      },
+      {
+        input: `
+          if (10 > 1) {
+            if (10 > 1) {
+              return 10;
+            }
+
+            return 1;
+          }
+        `,
+        expected: 10,
+        description: "nested return values"
+      }
+    ];
+
+    cases.forEach(({ input, expected, description }) => {
+      test(description, () => {
+        const result = doEval(input);
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(expected);
+      });
+    });
+  });
 });
