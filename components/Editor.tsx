@@ -20,7 +20,6 @@ function Editor({
       value={value}
       autoCursor={false}
       options={{
-        theme: "material",
         mode: "javascript",
         lineNumbers: true,
         readOnly
