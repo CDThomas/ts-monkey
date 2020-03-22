@@ -3,6 +3,8 @@ import { useState } from "react";
 
 import Tab from "../components/Tab";
 import { Program } from "../language/ast";
+import { evaluate } from "../language/evaluator";
+import { Err } from "../language/object";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
 
@@ -17,6 +19,13 @@ type Props = {
 
 export default function RightPane({ output }: Props): React.ReactElement {
   const [tab, setTab] = useState<TabName>(TabName.AST);
+  let evaluated = null;
+
+  try {
+    evaluated = evaluate(output);
+  } catch (error) {
+    console.error(error);
+  }
 
   return (
     <div
@@ -36,7 +45,8 @@ export default function RightPane({ output }: Props): React.ReactElement {
           left: 0,
           right: 0,
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          paddingLeft: 3
         }}
       >
         <div
@@ -45,8 +55,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
             borderBottom: "1px solid #ddd",
             height: 32,
             display: "flex",
-            alignItems: "center",
-            paddingLeft: 3
+            alignItems: "center"
           }}
         >
           <Tab
@@ -70,7 +79,21 @@ export default function RightPane({ output }: Props): React.ReactElement {
               right: 0
             }}
           >
-            <Editor readOnly value={JSON.stringify(output, null, 2)} />
+            {tab === TabName.AST && (
+              <Editor readOnly value={JSON.stringify(output, null, 2)} />
+            )}
+            {tab === TabName.Eval && (
+              <div
+                style={{
+                  padding: 8,
+                  fontFamily: "monospace",
+                  fontSize: 16,
+                  color: evaluated instanceof Err ? "#C41A16" : "inherit"
+                }}
+              >
+                {evaluated?.inspect()}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -19,13 +19,13 @@ function Home(): React.ReactElement {
         }}
       >
         {/* Main nav */}
-        <div
+        {/* <div
           style={{
             height: 32,
             backgroundColor: "#efefef",
             borderBottom: "1px solid #ddd"
           }}
-        />
+        /> */}
         <Workspace />
       </div>
     </div>

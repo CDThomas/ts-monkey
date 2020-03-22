@@ -21,6 +21,7 @@ export default function Tab({
           border-bottom: 3px solid ${active ? "#1293D8" : "transparent"};
           background-color: transparent;
           font-size: 16px;
+          cursor: pointer;
         }
         button:focus {
           outline: none;
