@@ -1,3 +1,18 @@
+class Environment {
+  store: { [key: string]: Obj } = {};
+
+  get(name: string): Obj | undefined {
+    return this.store[name];
+  }
+
+  set(name: string, value: Obj): Obj {
+    this.store[name] = value;
+    return value;
+  }
+}
+
+// Objects
+
 export interface Obj {
   inspect(): string;
 }
@@ -56,4 +71,4 @@ class ReturnValue implements Obj {
   }
 }
 
-export { Bool, Err, Integer, Null, ReturnValue };
+export { Bool, Environment, Err, Integer, Null, ReturnValue };

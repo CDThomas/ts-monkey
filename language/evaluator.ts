@@ -1,64 +1,87 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { ASTKind, IfExpression, Node, Statement } from "./ast";
-import { Bool, Err, Integer, Null, Obj, ReturnValue } from "./object";
+import { ASTKind, IfExpression, Node, Statement, Identifier } from "./ast";
+import {
+  Bool,
+  Environment,
+  Err,
+  Integer,
+  Null,
+  Obj,
+  ReturnValue
+} from "./object";
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
 const NULL = new Null();
 
-export function evaluate(node: Node): Obj {
+export function evaluate(node: Node, environment: Environment): Obj | null {
+  if (!node) return null;
+
   switch (node.kind) {
     case ASTKind.BlockStatement:
-      return evalStatements(node.statements);
+      return evalStatements(node.statements, environment);
     case ASTKind.Bool:
       return nativeBooleanToBooleanObject(node.value);
     case ASTKind.IfExpression:
-      return evalIfExpression(node);
+      return evalIfExpression(node, environment);
     case ASTKind.ExpressionStatement:
-      return evaluate(node.expression);
+      return evaluate(node.expression, environment);
     case ASTKind.InfixExpression: {
-      const left = evaluate(node.left);
-      if (isError(left)) return left;
+      const left = evaluate(node.left, environment);
+      if (!left || isError(left)) return left;
 
-      const right = evaluate(node.right);
-      if (isError(right)) return right;
+      const right = evaluate(node.right, environment);
+      if (!right || isError(right)) return right;
 
       return evalInfixExpression(node.operator, left, right);
     }
     case ASTKind.Integer:
       return new Integer(node.value);
+    case ASTKind.Let: {
+      const value = evaluate(node.value, environment);
+      if (!value || isError(value)) {
+        return value;
+      }
+      environment.set(node.name.value, value);
+      return null;
+    }
+    case ASTKind.Identifier:
+      return evalIdentifier(node, environment);
     case ASTKind.PrefixExpression: {
-      const right = evaluate(node.right);
-      if (isError(right)) return right;
+      const right = evaluate(node.right, environment);
+      if (!right || isError(right)) return right;
 
       return evalPrefixExpression(node.operator, right);
     }
     case ASTKind.Return: {
-      const value = evaluate(node.returnValue);
-      if (isError(value)) return value;
+      const value = evaluate(node.returnValue, environment);
+      if (!value || isError(value)) return value;
 
       return new ReturnValue(value);
     }
     case ASTKind.Program:
-      return evalProgram(node.statements);
+      return evalProgram(node.statements, environment);
   }
 
   throw new Error(`eval not implemented for ${node.kind}`);
 }
 
-function evalIfExpression(node: IfExpression): Obj {
-  const condition = evaluate(node.condition);
+function evalIfExpression(
+  node: IfExpression,
+  environment: Environment
+): Obj | null {
+  const condition = evaluate(node.condition, environment);
 
-  if (isError(condition)) {
+  if (!condition || isError(condition)) {
     return condition;
   }
 
   if (isTruthy(condition)) {
-    return evaluate(node.consequence);
+    return evaluate(node.consequence, environment);
   }
 
   if (node.alternative) {
-    return evaluate(node.alternative);
+    return evaluate(node.alternative, environment);
   }
 
   return NULL;
@@ -92,6 +115,16 @@ function evalBooleanInfixOperator(
   return new Err(
     `unknown operator: ${left.inspect()} ${operator} ${right.inspect()}`
   );
+}
+
+function evalIdentifier(node: Identifier, environment: Environment): Obj {
+  const value = environment.get(node.value);
+
+  if (!value) {
+    return new Err(`identifier not found: ${node.value}`);
+  }
+
+  return value;
 }
 
 function evalIntegerInfixOperator(
@@ -158,11 +191,14 @@ function evalMinusPrefixOperatorExpression(right: Obj): Obj {
   return new Err(`unknown operator: -${right.inspect()}`);
 }
 
-function evalStatements(statements: Statement[]): Obj {
-  let result: Obj = NULL;
+function evalStatements(
+  statements: Statement[],
+  environment: Environment
+): Obj | null {
+  let result: Obj | null = NULL;
 
   for (const statement of statements) {
-    result = evaluate(statement);
+    result = evaluate(statement, environment);
 
     if (result instanceof Err || result instanceof ReturnValue) {
       return result;
@@ -172,11 +208,14 @@ function evalStatements(statements: Statement[]): Obj {
   return result;
 }
 
-function evalProgram(statements: Statement[]): Obj {
-  let result: Obj = NULL;
+function evalProgram(
+  statements: Statement[],
+  environment: Environment
+): Obj | null {
+  let result: Obj | null = NULL;
 
   for (const statement of statements) {
-    result = evaluate(statement);
+    result = evaluate(statement, environment);
 
     if (result instanceof Err) {
       return result;
