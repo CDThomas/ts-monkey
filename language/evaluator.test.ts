@@ -1,14 +1,14 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Err, Integer, Null, Obj } from "./object";
+import { Bool, Environment, Err, Integer, Null, Obj } from "./object";
 
-function doEval(input: string): Obj {
+function doEval(input: string): Obj | null {
   const lexer = new Lexer(input);
   const parser = new Parser(lexer);
   const program = parser.parseProgram();
 
-  return evaluate(program);
+  return evaluate(program, new Environment());
 }
 
 describe("evaluating", () => {
@@ -172,6 +172,39 @@ describe("evaluating", () => {
     });
   });
 
+  describe("let statements", () => {
+    const cases = [
+      {
+        input: "let a = 5; a;",
+        expected: 5,
+        description: "assigning an integer literal"
+      },
+      {
+        input: "let a = 5 * 5; a;",
+        expected: 25,
+        description: "assigning an infix expression"
+      },
+      {
+        input: "let a = 5; let b = a; a;",
+        expected: 5,
+        description: "assigning the value of another identifier"
+      },
+      {
+        input: "let a = 5; let b = a; let c = a + b + 5; c;",
+        expected: 15,
+        description: "assigning an expression using multiple identifiers"
+      }
+    ];
+
+    cases.forEach(({ input, expected, description }) => {
+      test(description, () => {
+        const result = doEval(input);
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(expected);
+      });
+    });
+  });
+
   describe("return statements", () => {
     const cases = [
       { input: "return 10;", expected: 10, description: "returning a literal" },
@@ -272,6 +305,11 @@ describe("evaluating", () => {
         `,
         expected: "unknown operator: true + false",
         description: "an error before a return in a nested block statement"
+      },
+      {
+        input: "foobar",
+        expected: "identifier not found: foobar",
+        description: "unbound identifier"
       }
     ];
 
