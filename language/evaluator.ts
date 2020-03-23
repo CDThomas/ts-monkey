@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { ASTKind, IfExpression, Node, Statement, Identifier } from "./ast";
+import {
+  ASTKind,
+  IfExpression,
+  Node,
+  Statement,
+  Identifier,
+  Expression
+} from "./ast";
 import {
   Bool,
   Environment,
   Err,
+  Func,
   Integer,
   Null,
   Obj,
@@ -14,24 +22,36 @@ const TRUE = new Bool(true);
 const FALSE = new Bool(false);
 const NULL = new Null();
 
-export function evaluate(node: Node, environment: Environment): Obj | null {
-  if (!node) return null;
-
+export function evaluate(node: Node, environment: Environment): Obj {
   switch (node.kind) {
     case ASTKind.BlockStatement:
       return evalStatements(node.statements, environment);
     case ASTKind.Bool:
       return nativeBooleanToBooleanObject(node.value);
+    case ASTKind.CallExpression: {
+      const func = evaluate(node.function, environment);
+      if (isError(func)) {
+        return func;
+      }
+      const args = evalExpressions(node.arguments, environment);
+      if (args.length === 1 && isError(args[0])) {
+        return args[0];
+      }
+
+      return applyFunction(func, args);
+    }
     case ASTKind.IfExpression:
       return evalIfExpression(node, environment);
     case ASTKind.ExpressionStatement:
       return evaluate(node.expression, environment);
+    case ASTKind.FunctionLiteral:
+      return new Func(node.parameters, node.body, environment);
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left, environment);
-      if (!left || isError(left)) return left;
+      if (isError(left)) return left;
 
       const right = evaluate(node.right, environment);
-      if (!right || isError(right)) return right;
+      if (isError(right)) return right;
 
       return evalInfixExpression(node.operator, left, right);
     }
@@ -39,40 +59,35 @@ export function evaluate(node: Node, environment: Environment): Obj | null {
       return new Integer(node.value);
     case ASTKind.Let: {
       const value = evaluate(node.value, environment);
-      if (!value || isError(value)) {
+      if (isError(value)) {
         return value;
       }
       environment.set(node.name.value, value);
-      return null;
+      return NULL;
     }
     case ASTKind.Identifier:
       return evalIdentifier(node, environment);
     case ASTKind.PrefixExpression: {
       const right = evaluate(node.right, environment);
-      if (!right || isError(right)) return right;
+      if (isError(right)) return right;
 
       return evalPrefixExpression(node.operator, right);
     }
     case ASTKind.Return: {
       const value = evaluate(node.returnValue, environment);
-      if (!value || isError(value)) return value;
+      if (isError(value)) return value;
 
       return new ReturnValue(value);
     }
     case ASTKind.Program:
       return evalProgram(node.statements, environment);
   }
-
-  throw new Error(`eval not implemented for ${node.kind}`);
 }
 
-function evalIfExpression(
-  node: IfExpression,
-  environment: Environment
-): Obj | null {
+function evalIfExpression(node: IfExpression, environment: Environment): Obj {
   const condition = evaluate(node.condition, environment);
 
-  if (!condition || isError(condition)) {
+  if (isError(condition)) {
     return condition;
   }
 
@@ -191,11 +206,30 @@ function evalMinusPrefixOperatorExpression(right: Obj): Obj {
   return new Err(`unknown operator: -${right.inspect()}`);
 }
 
+function evalExpressions(
+  expressions: Expression[],
+  environment: Environment
+): Obj[] {
+  const result: Obj[] = [];
+
+  for (const expression of expressions) {
+    const evaluated = evaluate(expression, environment);
+
+    if (isError(evaluated)) {
+      return [evaluated];
+    }
+
+    result.push(evaluated);
+  }
+
+  return result;
+}
+
 function evalStatements(
   statements: Statement[],
   environment: Environment
-): Obj | null {
-  let result: Obj | null = NULL;
+): Obj {
+  let result: Obj = NULL;
 
   for (const statement of statements) {
     result = evaluate(statement, environment);
@@ -208,11 +242,8 @@ function evalStatements(
   return result;
 }
 
-function evalProgram(
-  statements: Statement[],
-  environment: Environment
-): Obj | null {
-  let result: Obj | null = NULL;
+function evalProgram(statements: Statement[], environment: Environment): Obj {
+  let result: Obj = NULL;
 
   for (const statement of statements) {
     result = evaluate(statement, environment);
@@ -226,6 +257,35 @@ function evalProgram(
   }
 
   return result;
+}
+
+function applyFunction(func: Obj, args: Obj[]): Obj {
+  if (!(func instanceof Func)) {
+    return new Err(`not a function: ${func.inspect()}`);
+  }
+
+  const extendedEnv = extendFunctionEnv(func, args);
+  const evaluated = evaluate(func.body, extendedEnv);
+  return unwrapReturnValue(evaluated);
+}
+
+function extendFunctionEnv(func: Func, args: Obj[]): Environment {
+  const environment = new Environment(func.environment);
+  const params = func.parameters;
+
+  for (let i = 0; i < args.length; i++) {
+    environment.set(params[i].value, args[i]);
+  }
+
+  return environment;
+}
+
+function unwrapReturnValue(obj: Obj): Obj {
+  if (obj instanceof ReturnValue) {
+    return obj.value;
+  }
+
+  return obj;
 }
 
 function nativeBooleanToBooleanObject(bool: boolean): Bool {

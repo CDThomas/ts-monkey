@@ -1,7 +1,8 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Environment, Err, Integer, Null, Obj } from "./object";
+import { Bool, Environment, Err, Integer, Null, Obj, Func } from "./object";
+import { ASTKind } from "./ast";
 
 function doEval(input: string): Obj | null {
   const lexer = new Lexer(input);
@@ -168,6 +169,85 @@ describe("evaluating", () => {
       test(description, () => {
         const result = doEval(input);
         expect((result as Bool).value).toBe(expected);
+      });
+    });
+  });
+
+  describe("function literals", () => {
+    const input = "fn(x) { x + 2; };";
+    const evaluated = doEval(input) as Func;
+
+    test("returns a Func object", () => {
+      expect(evaluated).toBeInstanceOf(Func);
+    });
+
+    test("sets the correct parameters", () => {
+      expect(evaluated.parameters).toEqual([
+        { kind: ASTKind.Identifier, value: "x" }
+      ]);
+    });
+
+    test("sets the correct body", () => {
+      expect(evaluated.body).toEqual({
+        kind: ASTKind.BlockStatement,
+        statements: [
+          {
+            kind: ASTKind.ExpressionStatement,
+            expression: {
+              kind: ASTKind.InfixExpression,
+              operator: "+",
+              left: { kind: ASTKind.Identifier, value: "x" },
+              right: { kind: ASTKind.Integer, value: 2 }
+            }
+          }
+        ]
+      });
+    });
+
+    test("sets the correct environment", () => {
+      expect(evaluated.environment).toEqual(new Environment());
+    });
+  });
+
+  describe("function calls", () => {
+    const cases = [
+      {
+        input: "let identity = fn(x) { x; }; identity(5);",
+        expected: 5,
+        description: "implicit return value"
+      },
+      {
+        input: "let identity = fn(x) { return x; }; identity(5);",
+        expected: 5,
+        description: "explicit return value"
+      },
+      {
+        input: "let double = fn(x) { x * 2; }; double(5);",
+        expected: 10,
+        description: "using parameters in expressions"
+      },
+      {
+        input: "let add = fn(x, y) { x + y; }; add(5, 5);",
+        expected: 10,
+        description: "multiple parameters"
+      },
+      {
+        input: "let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));",
+        expected: 20,
+        description: "evaluating arguments before calling"
+      },
+      {
+        input: "fn(x) { x; }(5)",
+        expected: 5,
+        description: "calling a function literal"
+      }
+    ];
+
+    cases.forEach(({ input, expected, description }) => {
+      test(description, () => {
+        const result = doEval(input);
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(expected);
       });
     });
   });
