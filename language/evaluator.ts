@@ -214,9 +214,6 @@ function evalExpressions(
 
   for (const expression of expressions) {
     const evaluated = evaluate(expression, environment);
-    if (!evaluated) {
-      throw new Error("evaluation error: expression did not result in a value");
-    }
 
     if (isError(evaluated)) {
       return [evaluated];
