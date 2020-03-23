@@ -4,7 +4,7 @@ import { useState } from "react";
 import Tab from "../components/Tab";
 import { Program } from "../language/ast";
 import { evaluate } from "../language/evaluator";
-import { Err } from "../language/object";
+import { Environment, Err } from "../language/object";
 
 const Editor = dynamic(import("../components/Editor"), { ssr: false });
 
@@ -22,7 +22,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
   let evaluated = null;
 
   try {
-    evaluated = evaluate(output);
+    evaluated = evaluate(output, new Environment());
   } catch (error) {
     console.error(error);
   }
