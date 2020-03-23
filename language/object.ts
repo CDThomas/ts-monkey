@@ -1,8 +1,23 @@
+import { BlockStatement, Identifier } from "./ast";
+import { print } from "./printer";
+
 class Environment {
-  store: { [key: string]: Obj } = {};
+  store: { [key: string]: Obj };
+  outer: Environment | null;
+
+  constructor(outer: Environment | null = null) {
+    this.outer = outer;
+    this.store = {};
+  }
 
   get(name: string): Obj | undefined {
-    return this.store[name];
+    const value = this.store[name];
+
+    if (!value && this.outer) {
+      return this.outer.get(name);
+    }
+
+    return value;
   }
 
   set(name: string, value: Obj): Obj {
@@ -41,6 +56,28 @@ class Err implements Obj {
   }
 }
 
+class Func implements Obj {
+  parameters: Identifier[];
+  body: BlockStatement;
+  environment: Environment;
+
+  constructor(
+    parameters: Identifier[],
+    body: BlockStatement,
+    environment: Environment
+  ) {
+    this.parameters = parameters;
+    this.body = body;
+    this.environment = environment;
+  }
+
+  inspect(): string {
+    const parameters = this.parameters.join(", ");
+    const body = print(this.body);
+    return `fn(${parameters}) {\n  ${body}\n}`;
+  }
+}
+
 class Integer implements Obj {
   value: number;
 
@@ -71,4 +108,4 @@ class ReturnValue implements Obj {
   }
 }
 
-export { Bool, Environment, Err, Integer, Null, ReturnValue };
+export { Bool, Environment, Err, Func, Integer, Null, ReturnValue };
