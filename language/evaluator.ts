@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import clone from "clone";
 import {
   ASTKind,
   IfExpression,
@@ -45,7 +46,7 @@ export function evaluate(node: Node, environment: Environment): Obj {
     case ASTKind.ExpressionStatement:
       return evaluate(node.expression, environment);
     case ASTKind.FunctionLiteral:
-      return new Func(node.parameters, node.body, environment);
+      return new Func(node.parameters, node.body, clone(environment));
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left, environment);
       if (isError(left)) return left;
