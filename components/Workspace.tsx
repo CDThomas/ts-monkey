@@ -17,6 +17,8 @@ let add = fn(x, y) {
 };
 
 let result = add(five, ten);
+
+result;
 `;
 
 const parse = (input: string): Program => {
