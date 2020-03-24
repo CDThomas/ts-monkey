@@ -240,6 +240,20 @@ describe("evaluating", () => {
         input: "fn(x) { x; }(5)",
         expected: 5,
         description: "calling a function literal"
+      },
+      {
+        input: `
+        let x = 12;
+        let add_to_x = fn(y) {
+          x + y;
+        };
+        let x = 1;
+
+        let result = add_to_x(5);
+        result;
+        `,
+        expected: 17,
+        description: "uses environment from when function is defined"
       }
     ];
 
