@@ -44,6 +44,20 @@ class Bool implements Obj {
   }
 }
 
+type BuiltinFunction = (...args: Obj[]) => Obj;
+
+class Builtin implements Obj {
+  function: BuiltinFunction;
+
+  constructor(func: BuiltinFunction) {
+    this.function = func;
+  }
+
+  inspect(): string {
+    return "builtin function";
+  }
+}
+
 class Err implements Obj {
   message: string;
 
@@ -120,4 +134,14 @@ class Str implements Obj {
   }
 }
 
-export { Bool, Environment, Err, Func, Integer, Null, ReturnValue, Str };
+export {
+  Bool,
+  Builtin,
+  Environment,
+  Err,
+  Func,
+  Integer,
+  Null,
+  ReturnValue,
+  Str
+};

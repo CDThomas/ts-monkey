@@ -449,4 +449,48 @@ describe("evaluating", () => {
       });
     });
   });
+
+  describe("builtin functions", () => {
+    describe("len", () => {
+      test("empty string returns 0", () => {
+        const input = 'len("")';
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(0);
+      });
+
+      test("non-empty strings return the correct length", () => {
+        const input = 'len("four")';
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(4);
+      });
+
+      test("returns an error given an argument of the wrong type", () => {
+        const input = "len(1)";
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Err);
+        expect((result as Err).message).toBe(
+          "argument to `len` not supported. got 1"
+        );
+      });
+
+      test("returns an error given the wrong number of arguments", () => {
+        const input = 'len("one", "two")';
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Err);
+        expect((result as Err).message).toBe(
+          "wrong number of arguments. expected 1, got 2"
+        );
+      });
+    });
+  });
 });
