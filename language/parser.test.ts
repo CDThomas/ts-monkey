@@ -182,6 +182,25 @@ describe("parsing", () => {
     });
   });
 
+  test("string literal expressions", () => {
+    const input = `"Hello world!"`;
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.String,
+            value: "Hello world!"
+          }
+        }
+      ]
+    });
+  });
+
   describe("prefix operators", () => {
     const cases = [
       { input: "!5", description: "bang integer" },

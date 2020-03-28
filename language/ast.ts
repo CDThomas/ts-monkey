@@ -11,7 +11,8 @@ export enum ASTKind {
   Let = "LET",
   PrefixExpression = "PREFIX_EXPRESSION",
   Program = "PROGRAM",
-  Return = "RETURN"
+  Return = "RETURN",
+  String = "STRING"
 }
 
 export type Node = Program | Statement | Expression;
@@ -30,7 +31,8 @@ export type Expression =
   | IfExpression
   | Integer
   | PrefixExpression
-  | InfixExpression;
+  | InfixExpression
+  | Str;
 
 export type Program = {
   kind: ASTKind.Program;
@@ -107,4 +109,9 @@ export type PrefixExpression = {
   kind: ASTKind.PrefixExpression;
   operator: string;
   right: Expression;
+};
+
+export type Str = {
+  kind: ASTKind.String;
+  value: string;
 };
