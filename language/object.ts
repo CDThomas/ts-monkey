@@ -72,7 +72,7 @@ class Func implements Obj {
   }
 
   inspect(): string {
-    const parameters = this.parameters.join(", ");
+    const parameters = this.parameters.map(param => param.value).join(", ");
     const body = print(this.body);
     return `fn(${parameters}) {\n  ${body}\n}`;
   }
@@ -108,4 +108,16 @@ class ReturnValue implements Obj {
   }
 }
 
-export { Bool, Environment, Err, Func, Integer, Null, ReturnValue };
+class Str implements Obj {
+  value: string;
+
+  constructor(value: string) {
+    this.value = value;
+  }
+
+  inspect(): string {
+    return `"${this.value}"`;
+  }
+}
+
+export { Bool, Environment, Err, Func, Integer, Null, ReturnValue, Str };

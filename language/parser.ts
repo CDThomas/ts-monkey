@@ -14,6 +14,7 @@ import {
   PrefixExpression,
   Program,
   ReturnStatment,
+  Str,
   Statement
 } from "./ast";
 import Lexer from "./lexer";
@@ -65,6 +66,7 @@ class Parser {
     this.parseGroupedExpression = this.parseGroupedExpression.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
     this.parseInfixExpression = this.parseInfixExpression.bind(this);
+    this.parseString = this.parseString.bind(this);
 
     this.prefixParseFunctions = {
       [TokenKind.Bang]: this.parsePrefixExpression,
@@ -75,7 +77,8 @@ class Parser {
       [TokenKind.Integer]: this.parseInteger,
       [TokenKind.LParen]: this.parseGroupedExpression,
       [TokenKind.Minus]: this.parsePrefixExpression,
-      [TokenKind.True]: this.parseBool
+      [TokenKind.True]: this.parseBool,
+      [TokenKind.String]: this.parseString
     };
 
     this.infixParseFunctions = {
@@ -423,6 +426,13 @@ class Parser {
     this.expectPeek(TokenKind.RParen);
 
     return expression;
+  }
+
+  private parseString(): Str {
+    return {
+      kind: ASTKind.String,
+      value: this.curToken.literal
+    };
   }
 }
 

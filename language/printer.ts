@@ -34,6 +34,8 @@ function print(node: Node): string {
       return node.statements.map(print).join("\n");
     case ASTKind.Return:
       return `return ${print(node.returnValue)};`;
+    case ASTKind.String:
+      return `"${node.value}"`;
   }
 }
 

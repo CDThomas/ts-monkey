@@ -1,7 +1,16 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Environment, Err, Integer, Null, Obj, Func } from "./object";
+import {
+  Bool,
+  Environment,
+  Err,
+  Func,
+  Integer,
+  Null,
+  Obj,
+  Str
+} from "./object";
 import { ASTKind } from "./ast";
 
 function doEval(input: string): Obj | null {
@@ -96,6 +105,26 @@ describe("evaluating", () => {
       expect(() => doEval("5 / 0")).toThrow(
         "evaluation error: cannot divide by zero"
       );
+    });
+  });
+
+  describe("strings", () => {
+    test("literals", () => {
+      const input = '"Hello world!"';
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Str);
+      expect((result as Str).value).toBe("Hello world!");
+    });
+
+    test("concatenation", () => {
+      const input = '"Hello" + " " + "world!"';
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Str);
+      expect((result as Str).value).toBe("Hello world!");
     });
   });
 
@@ -404,6 +433,11 @@ describe("evaluating", () => {
         input: "foobar",
         expected: "identifier not found: foobar",
         description: "unbound identifier"
+      },
+      {
+        input: '"Hello" - "world!"',
+        expected: 'unknown operator: "Hello" - "world!"',
+        description: "unknown string infix operator"
       }
     ];
 
