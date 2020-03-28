@@ -113,6 +113,9 @@ function evalInfixExpression(operator: string, left: Obj, right: Obj): Obj {
   if (left instanceof Integer && right instanceof Integer) {
     return evalIntegerInfixOperator(operator, left, right);
   }
+  if (left instanceof Str && right instanceof Str) {
+    return evalStringInfixOperator(operator, left, right);
+  }
 
   return new Err(
     `type mismatch: ${left.inspect()} ${operator} ${right.inspect()}`
@@ -171,6 +174,20 @@ function evalIntegerInfixOperator(
       return nativeBooleanToBooleanObject(left.value == right.value);
     case "!=":
       return nativeBooleanToBooleanObject(left.value != right.value);
+  }
+
+  return new Err(
+    `unknown operator: ${left.inspect()} ${operator} ${right.inspect()}`
+  );
+}
+
+function evalStringInfixOperator(
+  operator: string,
+  left: Str,
+  right: Str
+): Str | Err {
+  if (operator === "+") {
+    return new Str(left.value + right.value);
   }
 
   return new Err(

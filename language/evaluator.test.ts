@@ -108,12 +108,24 @@ describe("evaluating", () => {
     });
   });
 
-  test("string expressions", () => {
-    const input = '"Hello world!"';
+  describe("strings", () => {
+    test("literals", () => {
+      const input = '"Hello world!"';
 
-    const result = doEval(input);
-    expect(result).toBeInstanceOf(Str);
-    expect((result as Str).value).toBe("Hello world!");
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Str);
+      expect((result as Str).value).toBe("Hello world!");
+    });
+
+    test("concatenation", () => {
+      const input = '"Hello" + " " + "world!"';
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Str);
+      expect((result as Str).value).toBe("Hello world!");
+    });
   });
 
   describe("boolean expressions", () => {
@@ -421,6 +433,11 @@ describe("evaluating", () => {
         input: "foobar",
         expected: "identifier not found: foobar",
         description: "unbound identifier"
+      },
+      {
+        input: '"Hello" - "world!"',
+        expected: 'unknown operator: "Hello" - "world!"',
+        description: "unknown string infix operator"
       }
     ];
 
