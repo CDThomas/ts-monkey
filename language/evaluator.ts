@@ -16,7 +16,8 @@ import {
   Integer,
   Null,
   Obj,
-  ReturnValue
+  ReturnValue,
+  Str
 } from "./object";
 
 const TRUE = new Bool(true);
@@ -74,14 +75,16 @@ export function evaluate(node: Node, environment: Environment): Obj {
 
       return evalPrefixExpression(node.operator, right);
     }
+    case ASTKind.Program:
+      return evalProgram(node.statements, environment);
     case ASTKind.Return: {
       const value = evaluate(node.returnValue, environment);
       if (isError(value)) return value;
 
       return new ReturnValue(value);
     }
-    case ASTKind.Program:
-      return evalProgram(node.statements, environment);
+    case ASTKind.String:
+      return new Str(node.value);
   }
 }
 

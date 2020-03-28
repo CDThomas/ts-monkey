@@ -1,7 +1,16 @@
 import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
-import { Bool, Environment, Err, Integer, Null, Obj, Func } from "./object";
+import {
+  Bool,
+  Environment,
+  Err,
+  Func,
+  Integer,
+  Null,
+  Obj,
+  Str
+} from "./object";
 import { ASTKind } from "./ast";
 
 function doEval(input: string): Obj | null {
@@ -97,6 +106,14 @@ describe("evaluating", () => {
         "evaluation error: cannot divide by zero"
       );
     });
+  });
+
+  test("string expressions", () => {
+    const input = '"Hello world!"';
+
+    const result = doEval(input);
+    expect(result).toBeInstanceOf(Str);
+    expect((result as Str).value).toBe("Hello world!");
   });
 
   describe("boolean expressions", () => {

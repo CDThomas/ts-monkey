@@ -108,4 +108,16 @@ class ReturnValue implements Obj {
   }
 }
 
-export { Bool, Environment, Err, Func, Integer, Null, ReturnValue };
+class Str implements Obj {
+  value: string;
+
+  constructor(value: string) {
+    this.value = value;
+  }
+
+  inspect(): string {
+    return this.value;
+  }
+}
+
+export { Bool, Environment, Err, Func, Integer, Null, ReturnValue, Str };
