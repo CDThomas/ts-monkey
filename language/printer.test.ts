@@ -12,7 +12,8 @@ import {
   LetStatement,
   PrefixExpression,
   Program,
-  ReturnStatment
+  ReturnStatment,
+  Str
 } from "./ast";
 import { print } from "./printer";
 
@@ -340,5 +341,14 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("8;\ntrue;");
+  });
+
+  test("strings", () => {
+    const node: Str = {
+      kind: ASTKind.String,
+      value: "Hello world!"
+    };
+
+    expect(print(node)).toBe('"Hello world!"');
   });
 });
