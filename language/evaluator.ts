@@ -8,6 +8,7 @@ import {
   Identifier,
   Expression
 } from "./ast";
+import { builtins } from "./builtins";
 import {
   Bool,
   Environment,
@@ -17,7 +18,8 @@ import {
   Null,
   Obj,
   ReturnValue,
-  Str
+  Str,
+  Builtin
 } from "./object";
 
 const TRUE = new Bool(true);
@@ -141,12 +143,12 @@ function evalBooleanInfixOperator(
 
 function evalIdentifier(node: Identifier, environment: Environment): Obj {
   const value = environment.get(node.value);
+  if (value) return value;
 
-  if (!value) {
-    return new Err(`identifier not found: ${node.value}`);
-  }
+  const builtin = builtins[node.value];
+  if (builtin) return builtin;
 
-  return value;
+  return new Err(`identifier not found: ${node.value}`);
 }
 
 function evalIntegerInfixOperator(
@@ -281,13 +283,17 @@ function evalProgram(statements: Statement[], environment: Environment): Obj {
 }
 
 function applyFunction(func: Obj, args: Obj[]): Obj {
-  if (!(func instanceof Func)) {
-    return new Err(`not a function: ${func.inspect()}`);
+  if (func instanceof Func) {
+    const extendedEnv = extendFunctionEnv(func, args);
+    const evaluated = evaluate(func.body, extendedEnv);
+    return unwrapReturnValue(evaluated);
   }
 
-  const extendedEnv = extendFunctionEnv(func, args);
-  const evaluated = evaluate(func.body, extendedEnv);
-  return unwrapReturnValue(evaluated);
+  if (func instanceof Builtin) {
+    return func.function(...args);
+  }
+
+  return new Err(`not a function: ${func.inspect()}`);
 }
 
 function extendFunctionEnv(func: Func, args: Obj[]): Environment {
