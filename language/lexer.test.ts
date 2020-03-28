@@ -18,6 +18,8 @@ if (5 < 10) {
 }
 10 == 10;
 10 != 9;
+"foobar"
+"foo bar"
 `;
 
   const tests: [TokenKind, string][] = [
@@ -94,6 +96,8 @@ if (5 < 10) {
     [TokenKind.NotEqual, "!="],
     [TokenKind.Integer, "9"],
     [TokenKind.Semicolon, ";"],
+    [TokenKind.String, "foobar"],
+    [TokenKind.String, "foo bar"],
     [TokenKind.EOF, ""]
   ];
 

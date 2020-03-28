@@ -83,6 +83,9 @@ export default class Lexer {
       case "}":
         token = this.newToken(TokenKind.RBrace, this.ch);
         break;
+      case '"':
+        token = this.newToken(TokenKind.String, this.readString());
+        break;
       case null:
         token = this.newToken(TokenKind.EOF, "");
         break;
@@ -139,6 +142,15 @@ export default class Lexer {
 
   private isDigit(ch: string): boolean {
     return "0" <= ch && ch <= "9";
+  }
+
+  private readString(): string {
+    const position = this.position + 1;
+    do {
+      this.readChar();
+    } while (this.ch && this.ch !== '"');
+
+    return this.input.slice(position, this.position);
   }
 
   private peekChar(): string | null {

@@ -5,6 +5,7 @@ export enum TokenKind {
   // Identifiers + literals
   Ident = "IDENT",
   Integer = "INTEGER",
+  String = "STRING",
 
   // Operators
   Assign = "=",
