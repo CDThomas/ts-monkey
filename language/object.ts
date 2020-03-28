@@ -72,7 +72,7 @@ class Func implements Obj {
   }
 
   inspect(): string {
-    const parameters = this.parameters.join(", ");
+    const parameters = this.parameters.map(param => param.value).join(", ");
     const body = print(this.body);
     return `fn(${parameters}) {\n  ${body}\n}`;
   }
@@ -116,7 +116,7 @@ class Str implements Obj {
   }
 
   inspect(): string {
-    return this.value;
+    return `"${this.value}"`;
   }
 }
 
