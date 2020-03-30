@@ -1,4 +1,5 @@
 export enum ASTKind {
+  ArrayLiteral = "ARRAY_LITERAL",
   BlockStatement = "BLOCK_STATEMENT",
   Bool = "BOOL",
   CallExpression = "CALL_EXPRESSION",
@@ -24,6 +25,7 @@ export type Statement =
   | ReturnStatment;
 
 export type Expression =
+  | ArrayLiteral
   | Bool
   | CallExpression
   | FunctionLiteral
@@ -63,6 +65,11 @@ export type ReturnStatment = {
 };
 
 // Expressions
+
+export type ArrayLiteral = {
+  kind: ASTKind.ArrayLiteral;
+  elements: Expression[];
+};
 
 export type Bool = {
   kind: ASTKind.Bool;
