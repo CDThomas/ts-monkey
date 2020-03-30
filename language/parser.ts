@@ -1,4 +1,5 @@
 import {
+  ArrayLiteral,
   ASTKind,
   BlockStatement,
   Bool,
@@ -57,6 +58,7 @@ class Parser {
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
 
+    this.parseArrayLiteral = this.parseArrayLiteral.bind(this);
     this.parseBool = this.parseBool.bind(this);
     this.parseCallExpression = this.parseCallExpression.bind(this);
     this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
@@ -75,6 +77,7 @@ class Parser {
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.If]: this.parseIfExpression,
       [TokenKind.Integer]: this.parseInteger,
+      [TokenKind.LBracket]: this.parseArrayLiteral,
       [TokenKind.LParen]: this.parseGroupedExpression,
       [TokenKind.Minus]: this.parsePrefixExpression,
       [TokenKind.True]: this.parseBool,
@@ -223,6 +226,38 @@ class Parser {
     return leftExpression;
   }
 
+  private parseArrayLiteral(): ArrayLiteral {
+    const elements = this.parseExpressionList(TokenKind.RBracket);
+
+    return {
+      kind: ASTKind.ArrayLiteral,
+      elements
+    };
+  }
+
+  private parseExpressionList(endToken: TokenKind): Expression[] {
+    const list: Expression[] = [];
+
+    if (this.peekTokenIs(endToken)) {
+      this.nextToken();
+      return list;
+    }
+
+    this.nextToken();
+    list.push(this.parseExpression(Precedence.Lowest));
+
+    while (this.peekTokenIs(TokenKind.Comma)) {
+      this.nextToken();
+      this.nextToken();
+
+      list.push(this.parseExpression(Precedence.Lowest));
+    }
+
+    this.expectPeek(endToken);
+
+    return list;
+  }
+
   private parseBlockStatement(): BlockStatement {
     const statements: Statement[] = [];
 
@@ -259,35 +294,13 @@ class Parser {
       );
     }
 
-    const args = this.parseCallArguments();
+    const args = this.parseExpressionList(TokenKind.RParen);
 
     return {
       kind: ASTKind.CallExpression,
       function: expression,
       arguments: args
     };
-  }
-
-  private parseCallArguments(): Expression[] {
-    const args: Expression[] = [];
-
-    if (this.peekTokenIs(TokenKind.RParen)) {
-      this.nextToken();
-      return args;
-    }
-
-    this.nextToken();
-    args.push(this.parseExpression(Precedence.Lowest));
-
-    while (this.peekTokenIs(TokenKind.Comma)) {
-      this.nextToken();
-      this.nextToken();
-      args.push(this.parseExpression(Precedence.Lowest));
-    }
-
-    this.expectPeek(TokenKind.RParen);
-
-    return args;
   }
 
   private parseIdentifier(): Identifier {

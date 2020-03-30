@@ -239,6 +239,38 @@ describe("parsing", () => {
     });
   });
 
+  describe("array literals", () => {
+    const cases = [
+      {
+        input: "[]",
+        description: "with no params"
+      },
+      {
+        input: "[1]",
+        description: "with one param"
+      },
+      {
+        input: "[1, 2]",
+        description: "with multiple params"
+      },
+      {
+        input: '[1, "two"]',
+        description: "with mixed params"
+      },
+      {
+        input: "[1, -2, 3 * 3, 1 < 2]",
+        description: "with operators in params"
+      }
+    ];
+
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
+        const AST = parse(input);
+        expect(AST).toMatchSnapshot();
+      });
+    });
+  });
+
   describe("boolean literals", () => {
     test("true", () => {
       const input = "true;";
