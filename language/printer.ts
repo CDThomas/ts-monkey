@@ -2,6 +2,8 @@ import { ASTKind, IfExpression, Node } from "./ast";
 
 function print(node: Node): string {
   switch (node.kind) {
+    case ASTKind.ArrayLiteral:
+      return `[${node.elements.map(print).join(", ")}]`;
     case ASTKind.BlockStatement:
       return node.statements.map(print).join("\n");
     case ASTKind.Bool:

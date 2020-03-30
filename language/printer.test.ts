@@ -1,4 +1,5 @@
 import {
+  ArrayLiteral,
   ASTKind,
   BlockStatement,
   Bool,
@@ -350,5 +351,35 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe('"Hello world!"');
+  });
+
+  test("array literals with no params", () => {
+    const node: ArrayLiteral = {
+      kind: ASTKind.ArrayLiteral,
+      elements: []
+    };
+
+    expect(print(node)).toBe("[]");
+  });
+
+  test("array literals with one param", () => {
+    const node: ArrayLiteral = {
+      kind: ASTKind.ArrayLiteral,
+      elements: [{ kind: ASTKind.Integer, value: 1 }]
+    };
+
+    expect(print(node)).toBe("[1]");
+  });
+
+  test("array literals with multiple params", () => {
+    const node: ArrayLiteral = {
+      kind: ASTKind.ArrayLiteral,
+      elements: [
+        { kind: ASTKind.Integer, value: 1 },
+        { kind: ASTKind.Integer, value: 2 }
+      ]
+    };
+
+    expect(print(node)).toBe("[1, 2]");
   });
 });
