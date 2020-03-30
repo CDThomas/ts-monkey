@@ -7,6 +7,7 @@ export enum ASTKind {
   FunctionLiteral = "FUNCTION_LITERAL",
   Identifier = "IDENTIFIER",
   IfExpression = "IF_EXPRESSION",
+  IndexExpression = "INDEX_EXPRESSION",
   InfixExpression = "INFIX_EXPRESSION",
   Integer = "INTEGER",
   Let = "LET",
@@ -30,6 +31,7 @@ export type Expression =
   | CallExpression
   | FunctionLiteral
   | Identifier
+  | IndexExpression
   | IfExpression
   | Integer
   | PrefixExpression
@@ -98,6 +100,12 @@ export type IfExpression = {
   condition: Expression;
   consequence: BlockStatement;
   alternative?: BlockStatement;
+};
+
+export type IndexExpression = {
+  kind: ASTKind.IndexExpression;
+  left: Expression;
+  index: Expression;
 };
 
 export type InfixExpression = {

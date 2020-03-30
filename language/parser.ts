@@ -9,6 +9,7 @@ import {
   FunctionLiteral,
   Identifier,
   IfExpression,
+  IndexExpression,
   InfixExpression,
   Integer,
   LetStatement,
@@ -31,7 +32,8 @@ enum Precedence {
   Sum,
   Product,
   Prefix,
-  Call
+  Call,
+  Index
 }
 
 const precedences: Partial<Record<TokenKind, Precedence>> = {
@@ -43,7 +45,8 @@ const precedences: Partial<Record<TokenKind, Precedence>> = {
   [TokenKind.Minus]: Precedence.Sum,
   [TokenKind.Slash]: Precedence.Product,
   [TokenKind.Asterisk]: Precedence.Product,
-  [TokenKind.LParen]: Precedence.Call
+  [TokenKind.LParen]: Precedence.Call,
+  [TokenKind.LBracket]: Precedence.Index
 };
 
 class Parser {
@@ -64,6 +67,7 @@ class Parser {
     this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseIfExpression = this.parseIfExpression.bind(this);
+    this.parseIndexExpression = this.parseIndexExpression.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
     this.parseGroupedExpression = this.parseGroupedExpression.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
@@ -91,6 +95,7 @@ class Parser {
       [TokenKind.Asterisk]: this.parseInfixExpression,
       [TokenKind.Equal]: this.parseInfixExpression,
       [TokenKind.NotEqual]: this.parseInfixExpression,
+      [TokenKind.LBracket]: this.parseIndexExpression,
       [TokenKind.LessThan]: this.parseInfixExpression,
       [TokenKind.GreaterThan]: this.parseInfixExpression,
       [TokenKind.LParen]: this.parseCallExpression
@@ -413,6 +418,20 @@ class Parser {
 
   private curPrecedence(): Precedence {
     return precedences[this.curToken.kind] || Precedence.Lowest;
+  }
+
+  private parseIndexExpression(left: Expression): IndexExpression {
+    this.nextToken();
+
+    const index = this.parseExpression(Precedence.Lowest);
+
+    this.expectPeek(TokenKind.RBracket);
+
+    return {
+      kind: ASTKind.IndexExpression,
+      left,
+      index
+    };
   }
 
   private parseInfixExpression(left: Expression): InfixExpression {

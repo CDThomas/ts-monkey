@@ -8,6 +8,7 @@ import {
   FunctionLiteral,
   Identifier,
   IfExpression,
+  IndexExpression,
   InfixExpression,
   Integer,
   LetStatement,
@@ -254,6 +255,22 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("if (true) {\n  x;\n} else {\n  y;\n}");
+  });
+
+  test("index expressions", () => {
+    const node: IndexExpression = {
+      kind: ASTKind.IndexExpression,
+      left: {
+        kind: ASTKind.Identifier,
+        value: "myArray"
+      },
+      index: {
+        kind: ASTKind.Integer,
+        value: 1
+      }
+    };
+
+    expect(print(node)).toBe("(myArray[1])");
   });
 
   test("infix expressions", () => {
