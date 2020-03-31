@@ -32,6 +32,19 @@ export interface Obj {
   inspect(): string;
 }
 
+class Arr implements Obj {
+  elements: Obj[];
+
+  constructor(elements: Obj[]) {
+    this.elements = elements;
+  }
+
+  inspect(): string {
+    const elements = this.elements.map(element => element.inspect());
+    return `[${elements.join(", ")}]`;
+  }
+}
+
 class Bool implements Obj {
   value: boolean;
 
@@ -135,6 +148,7 @@ class Str implements Obj {
 }
 
 export {
+  Arr,
   Bool,
   Builtin,
   Environment,

@@ -2,6 +2,7 @@ import Lexer from "./lexer";
 import Parser from "./parser";
 import { evaluate } from "./evaluator";
 import {
+  Arr,
   Bool,
   Environment,
   Err,
@@ -157,6 +158,20 @@ describe("evaluating", () => {
         expect(result).toBeInstanceOf(Bool);
         expect((result as Bool).value).toBe(expected);
       });
+    });
+  });
+
+  describe("arrays", () => {
+    test("literals", () => {
+      const input = "[1, 2 * 2, 3 + 3]";
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([
+        new Integer(1),
+        new Integer(4),
+        new Integer(6)
+      ]);
     });
   });
 
@@ -438,6 +453,11 @@ describe("evaluating", () => {
         input: '"Hello" - "world!"',
         expected: 'unknown operator: "Hello" - "world!"',
         description: "unknown string infix operator"
+      },
+      {
+        input: "[foo]",
+        expected: "identifier not found: foo",
+        description: "an error in an array literal"
       }
     ];
 
