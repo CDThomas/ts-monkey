@@ -1,5 +1,140 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parsing array literals with mixed params: [1, "two"] 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "elements": Array [
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+          Object {
+            "kind": "STRING",
+            "value": "two",
+          },
+        ],
+        "kind": "ARRAY_LITERAL",
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing array literals with multiple params: [1, 2] 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "elements": Array [
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+          Object {
+            "kind": "INTEGER",
+            "value": 2,
+          },
+        ],
+        "kind": "ARRAY_LITERAL",
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing array literals with no params: [] 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "elements": Array [],
+        "kind": "ARRAY_LITERAL",
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing array literals with one param: [1] 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "elements": Array [
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+        ],
+        "kind": "ARRAY_LITERAL",
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing array literals with operators in params: [1, -2, 3 * 3, 1 < 2] 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "elements": Array [
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+          Object {
+            "kind": "PREFIX_EXPRESSION",
+            "operator": "-",
+            "right": Object {
+              "kind": "INTEGER",
+              "value": 2,
+            },
+          },
+          Object {
+            "kind": "INFIX_EXPRESSION",
+            "left": Object {
+              "kind": "INTEGER",
+              "value": 3,
+            },
+            "operator": "*",
+            "right": Object {
+              "kind": "INTEGER",
+              "value": 3,
+            },
+          },
+          Object {
+            "kind": "INFIX_EXPRESSION",
+            "left": Object {
+              "kind": "INTEGER",
+              "value": 1,
+            },
+            "operator": "<",
+            "right": Object {
+              "kind": "INTEGER",
+              "value": 2,
+            },
+          },
+        ],
+        "kind": "ARRAY_LITERAL",
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
 exports[`parsing infix operators adding integers: 5 + 5 1`] = `
 Object {
   "kind": "PROGRAM",

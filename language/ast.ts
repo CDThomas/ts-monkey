@@ -1,4 +1,5 @@
 export enum ASTKind {
+  ArrayLiteral = "ARRAY_LITERAL",
   BlockStatement = "BLOCK_STATEMENT",
   Bool = "BOOL",
   CallExpression = "CALL_EXPRESSION",
@@ -6,6 +7,7 @@ export enum ASTKind {
   FunctionLiteral = "FUNCTION_LITERAL",
   Identifier = "IDENTIFIER",
   IfExpression = "IF_EXPRESSION",
+  IndexExpression = "INDEX_EXPRESSION",
   InfixExpression = "INFIX_EXPRESSION",
   Integer = "INTEGER",
   Let = "LET",
@@ -24,10 +26,12 @@ export type Statement =
   | ReturnStatment;
 
 export type Expression =
+  | ArrayLiteral
   | Bool
   | CallExpression
   | FunctionLiteral
   | Identifier
+  | IndexExpression
   | IfExpression
   | Integer
   | PrefixExpression
@@ -64,6 +68,11 @@ export type ReturnStatment = {
 
 // Expressions
 
+export type ArrayLiteral = {
+  kind: ASTKind.ArrayLiteral;
+  elements: Expression[];
+};
+
 export type Bool = {
   kind: ASTKind.Bool;
   value: boolean;
@@ -91,6 +100,12 @@ export type IfExpression = {
   condition: Expression;
   consequence: BlockStatement;
   alternative?: BlockStatement;
+};
+
+export type IndexExpression = {
+  kind: ASTKind.IndexExpression;
+  left: Expression;
+  index: Expression;
 };
 
 export type InfixExpression = {

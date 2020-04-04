@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import clone from "clone";
 import {
+  ArrayLiteral,
   ASTKind,
   IfExpression,
   Node,
   Statement,
   Identifier,
-  Expression
+  Expression,
+  IndexExpression
 } from "./ast";
 import { builtins } from "./builtins";
 import {
+  Arr,
   Bool,
   Environment,
   Err,
@@ -28,6 +31,8 @@ const NULL = new Null();
 
 export function evaluate(node: Node, environment: Environment): Obj {
   switch (node.kind) {
+    case ASTKind.ArrayLiteral:
+      return evalArrayLiteral(node, environment);
     case ASTKind.BlockStatement:
       return evalStatements(node.statements, environment);
     case ASTKind.Bool:
@@ -50,6 +55,8 @@ export function evaluate(node: Node, environment: Environment): Obj {
       return evaluate(node.expression, environment);
     case ASTKind.FunctionLiteral:
       return new Func(node.parameters, node.body, clone(environment));
+    case ASTKind.IndexExpression:
+      return evalIndexExpression(node, environment);
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left, environment);
       if (isError(left)) return left;
@@ -88,6 +95,20 @@ export function evaluate(node: Node, environment: Environment): Obj {
     case ASTKind.String:
       return new Str(node.value);
   }
+}
+
+function evalArrayLiteral(
+  node: ArrayLiteral,
+  environment: Environment
+): Arr | Err {
+  const elements = evalExpressions(node.elements, environment);
+
+  const first = elements[0];
+  if (elements.length === 1 && isError(first)) {
+    return first;
+  }
+
+  return new Arr(elements);
 }
 
 function evalIfExpression(node: IfExpression, environment: Environment): Obj {
@@ -229,6 +250,31 @@ function evalMinusPrefixOperatorExpression(right: Obj): Obj {
   return new Err(`unknown operator: -${right.inspect()}`);
 }
 
+function evalIndexExpression(
+  node: IndexExpression,
+  environment: Environment
+): Obj {
+  const left = evaluate(node.left, environment);
+  const index = evaluate(node.index, environment);
+
+  if (isError(left)) {
+    return left;
+  }
+
+  if (isError(index)) {
+    return index;
+  }
+
+  if (left instanceof Arr && index instanceof Integer) {
+    const value = left.elements[index.value];
+    return value || NULL;
+  }
+
+  return new Err(
+    `index operator not supported: ${left.inspect()}[${index.inspect()}]`
+  );
+}
+
 function evalExpressions(
   expressions: Expression[],
   environment: Environment
@@ -323,6 +369,6 @@ function isTruthy(obj: Obj): boolean {
   return obj !== FALSE && obj !== NULL;
 }
 
-function isError(obj: Obj): boolean {
+function isError(obj: Obj): obj is Err {
   return obj instanceof Err;
 }

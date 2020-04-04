@@ -20,6 +20,7 @@ if (5 < 10) {
 10 != 9;
 "foobar"
 "foo bar"
+[1, 2];
 `;
 
   const tests: [TokenKind, string][] = [
@@ -98,6 +99,12 @@ if (5 < 10) {
     [TokenKind.Semicolon, ";"],
     [TokenKind.String, "foobar"],
     [TokenKind.String, "foo bar"],
+    [TokenKind.LBracket, "["],
+    [TokenKind.Integer, "1"],
+    [TokenKind.Comma, ","],
+    [TokenKind.Integer, "2"],
+    [TokenKind.RBracket, "]"],
+    [TokenKind.Semicolon, ";"],
     [TokenKind.EOF, ""]
   ];
 
