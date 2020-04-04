@@ -7,7 +7,8 @@ import {
   Node,
   Statement,
   Identifier,
-  Expression
+  Expression,
+  IndexExpression
 } from "./ast";
 import { builtins } from "./builtins";
 import {
@@ -54,6 +55,8 @@ export function evaluate(node: Node, environment: Environment): Obj {
       return evaluate(node.expression, environment);
     case ASTKind.FunctionLiteral:
       return new Func(node.parameters, node.body, clone(environment));
+    case ASTKind.IndexExpression:
+      return evalIndexExpression(node, environment);
     case ASTKind.InfixExpression: {
       const left = evaluate(node.left, environment);
       if (isError(left)) return left;
@@ -245,6 +248,31 @@ function evalMinusPrefixOperatorExpression(right: Obj): Obj {
   }
 
   return new Err(`unknown operator: -${right.inspect()}`);
+}
+
+function evalIndexExpression(
+  node: IndexExpression,
+  environment: Environment
+): Obj {
+  const left = evaluate(node.left, environment);
+  const index = evaluate(node.index, environment);
+
+  if (isError(left)) {
+    return left;
+  }
+
+  if (isError(index)) {
+    return index;
+  }
+
+  if (left instanceof Arr && index instanceof Integer) {
+    const value = left.elements[index.value];
+    return value || NULL;
+  }
+
+  return new Err(
+    `index operator not supported: ${left.inspect()}[${index.inspect()}]`
+  );
 }
 
 function evalExpressions(

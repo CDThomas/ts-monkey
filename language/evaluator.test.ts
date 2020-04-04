@@ -173,6 +173,58 @@ describe("evaluating", () => {
         new Integer(6)
       ]);
     });
+
+    describe("index expressions", () => {
+      const cases = [
+        { input: "[1, 2, 3][0]", expected: 1, description: "index of 0" },
+        { input: "[1, 2, 3][1]", expected: 2, description: "index of 1" },
+        { input: "[1, 2, 3][2]", expected: 3, description: "index of 2" },
+        {
+          input: "let i = 0; [1][i]",
+          expected: 1,
+          description: "identifier as index"
+        },
+        {
+          input: "[1, 2, 3][1 + 1]",
+          expected: 3,
+          description: "arithmetic in index expression"
+        },
+        {
+          input: "let myArray = [1, 2, 3]; myArray[2]",
+          expected: 3,
+          description: "identifier as left side"
+        },
+        {
+          input:
+            "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+          expected: 6,
+          description: "used in an expression"
+        },
+        {
+          input: "[1, 2, 3][3]",
+          expected: null,
+          description: "positive out-of-bounds index"
+        },
+        {
+          input: "[1, 2, 3][-1]",
+          expected: null,
+          description: "negative out-of-bounds index"
+        }
+      ];
+
+      cases.forEach(({ input, expected, description }) => {
+        test(description, () => {
+          expect.assertions(1);
+          const result = doEval(input);
+
+          if (expected) {
+            expect(result).toEqual(new Integer(expected));
+          } else {
+            expect(result).toEqual(new Null());
+          }
+        });
+      });
+    });
   });
 
   describe("the bang prefix operator", () => {
@@ -458,6 +510,21 @@ describe("evaluating", () => {
         input: "[foo]",
         expected: "identifier not found: foo",
         description: "an error in an array literal"
+      },
+      {
+        input: "foo[1]",
+        expected: "identifier not found: foo",
+        description: "an error in left of index operator"
+      },
+      {
+        input: "[1][foo]",
+        expected: "identifier not found: foo",
+        description: "an error in index of index operator"
+      },
+      {
+        input: "1[1]",
+        expected: "index operator not supported: 1[1]",
+        description: "index operator on unsupported type"
       }
     ];
 
