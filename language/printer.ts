@@ -2,6 +2,8 @@ import { ASTKind, IfExpression, Node } from "./ast";
 
 function print(node: Node): string {
   switch (node.kind) {
+    case ASTKind.ArrayLiteral:
+      return `[${node.elements.map(print).join(", ")}]`;
     case ASTKind.BlockStatement:
       return node.statements.map(print).join("\n");
     case ASTKind.Bool:
@@ -22,6 +24,8 @@ function print(node: Node): string {
       // printIfExpression must be used before it's defined since print and printIfExpression call each other.
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return printIfExpression(node);
+    case ASTKind.IndexExpression:
+      return `(${print(node.left)}[${print(node.index)}])`;
     case ASTKind.InfixExpression:
       return `(${print(node.left)} ${node.operator} ${print(node.right)})`;
     case ASTKind.Integer:

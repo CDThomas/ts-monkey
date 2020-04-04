@@ -163,6 +163,32 @@ describe("parsing", () => {
     });
   });
 
+  test("index expressions", () => {
+    const input = "myArray[1];";
+
+    const AST = parse(input);
+
+    expect(AST).toEqual({
+      kind: ASTKind.Program,
+      statements: [
+        {
+          kind: ASTKind.ExpressionStatement,
+          expression: {
+            kind: ASTKind.IndexExpression,
+            left: {
+              kind: ASTKind.Identifier,
+              value: "myArray"
+            },
+            index: {
+              kind: ASTKind.Integer,
+              value: 1
+            }
+          }
+        }
+      ]
+    });
+  });
+
   test("integer literal expressions", () => {
     const input = "5;";
 
@@ -229,6 +255,38 @@ describe("parsing", () => {
       { input: "5 != 5", description: "integer not equal to integer" },
       { input: "false == true", description: "boolean equal to boolean" },
       { input: "true != false", description: "boolean not equal to boolean" }
+    ];
+
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
+        const AST = parse(input);
+        expect(AST).toMatchSnapshot();
+      });
+    });
+  });
+
+  describe("array literals", () => {
+    const cases = [
+      {
+        input: "[]",
+        description: "with no params"
+      },
+      {
+        input: "[1]",
+        description: "with one param"
+      },
+      {
+        input: "[1, 2]",
+        description: "with multiple params"
+      },
+      {
+        input: '[1, "two"]',
+        description: "with mixed params"
+      },
+      {
+        input: "[1, -2, 3 * 3, 1 < 2]",
+        description: "with operators in params"
+      }
     ];
 
     cases.forEach(({ input, description }) => {
@@ -585,6 +643,16 @@ describe("parsing", () => {
         expected: "add((((a + b) + ((c * d) / f)) + g));",
         description:
           "Call expression with multiple arithmetic operators in one arg"
+      },
+      {
+        input: "a * [1, 2, 3, 4][b * c] * d",
+        expected: "((a * ([1, 2, 3, 4][(b * c)])) * d);",
+        description: "Index operator"
+      },
+      {
+        input: "add(a * b[2], b[1], 2 * [1, 2][1])",
+        expected: "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])));",
+        description: "Multiple index operators in call arguments"
       }
     ];
 

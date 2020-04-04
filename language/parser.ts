@@ -1,4 +1,5 @@
 import {
+  ArrayLiteral,
   ASTKind,
   BlockStatement,
   Bool,
@@ -8,6 +9,7 @@ import {
   FunctionLiteral,
   Identifier,
   IfExpression,
+  IndexExpression,
   InfixExpression,
   Integer,
   LetStatement,
@@ -30,7 +32,8 @@ enum Precedence {
   Sum,
   Product,
   Prefix,
-  Call
+  Call,
+  Index
 }
 
 const precedences: Partial<Record<TokenKind, Precedence>> = {
@@ -42,7 +45,8 @@ const precedences: Partial<Record<TokenKind, Precedence>> = {
   [TokenKind.Minus]: Precedence.Sum,
   [TokenKind.Slash]: Precedence.Product,
   [TokenKind.Asterisk]: Precedence.Product,
-  [TokenKind.LParen]: Precedence.Call
+  [TokenKind.LParen]: Precedence.Call,
+  [TokenKind.LBracket]: Precedence.Index
 };
 
 class Parser {
@@ -57,11 +61,13 @@ class Parser {
     this.curToken = this.lexer.nextToken();
     this.peekToken = this.lexer.nextToken();
 
+    this.parseArrayLiteral = this.parseArrayLiteral.bind(this);
     this.parseBool = this.parseBool.bind(this);
     this.parseCallExpression = this.parseCallExpression.bind(this);
     this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseIfExpression = this.parseIfExpression.bind(this);
+    this.parseIndexExpression = this.parseIndexExpression.bind(this);
     this.parseInteger = this.parseInteger.bind(this);
     this.parseGroupedExpression = this.parseGroupedExpression.bind(this);
     this.parsePrefixExpression = this.parsePrefixExpression.bind(this);
@@ -75,6 +81,7 @@ class Parser {
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.If]: this.parseIfExpression,
       [TokenKind.Integer]: this.parseInteger,
+      [TokenKind.LBracket]: this.parseArrayLiteral,
       [TokenKind.LParen]: this.parseGroupedExpression,
       [TokenKind.Minus]: this.parsePrefixExpression,
       [TokenKind.True]: this.parseBool,
@@ -88,6 +95,7 @@ class Parser {
       [TokenKind.Asterisk]: this.parseInfixExpression,
       [TokenKind.Equal]: this.parseInfixExpression,
       [TokenKind.NotEqual]: this.parseInfixExpression,
+      [TokenKind.LBracket]: this.parseIndexExpression,
       [TokenKind.LessThan]: this.parseInfixExpression,
       [TokenKind.GreaterThan]: this.parseInfixExpression,
       [TokenKind.LParen]: this.parseCallExpression
@@ -223,6 +231,38 @@ class Parser {
     return leftExpression;
   }
 
+  private parseArrayLiteral(): ArrayLiteral {
+    const elements = this.parseExpressionList(TokenKind.RBracket);
+
+    return {
+      kind: ASTKind.ArrayLiteral,
+      elements
+    };
+  }
+
+  private parseExpressionList(endToken: TokenKind): Expression[] {
+    const list: Expression[] = [];
+
+    if (this.peekTokenIs(endToken)) {
+      this.nextToken();
+      return list;
+    }
+
+    this.nextToken();
+    list.push(this.parseExpression(Precedence.Lowest));
+
+    while (this.peekTokenIs(TokenKind.Comma)) {
+      this.nextToken();
+      this.nextToken();
+
+      list.push(this.parseExpression(Precedence.Lowest));
+    }
+
+    this.expectPeek(endToken);
+
+    return list;
+  }
+
   private parseBlockStatement(): BlockStatement {
     const statements: Statement[] = [];
 
@@ -259,35 +299,13 @@ class Parser {
       );
     }
 
-    const args = this.parseCallArguments();
+    const args = this.parseExpressionList(TokenKind.RParen);
 
     return {
       kind: ASTKind.CallExpression,
       function: expression,
       arguments: args
     };
-  }
-
-  private parseCallArguments(): Expression[] {
-    const args: Expression[] = [];
-
-    if (this.peekTokenIs(TokenKind.RParen)) {
-      this.nextToken();
-      return args;
-    }
-
-    this.nextToken();
-    args.push(this.parseExpression(Precedence.Lowest));
-
-    while (this.peekTokenIs(TokenKind.Comma)) {
-      this.nextToken();
-      this.nextToken();
-      args.push(this.parseExpression(Precedence.Lowest));
-    }
-
-    this.expectPeek(TokenKind.RParen);
-
-    return args;
   }
 
   private parseIdentifier(): Identifier {
@@ -400,6 +418,20 @@ class Parser {
 
   private curPrecedence(): Precedence {
     return precedences[this.curToken.kind] || Precedence.Lowest;
+  }
+
+  private parseIndexExpression(left: Expression): IndexExpression {
+    this.nextToken();
+
+    const index = this.parseExpression(Precedence.Lowest);
+
+    this.expectPeek(TokenKind.RBracket);
+
+    return {
+      kind: ASTKind.IndexExpression,
+      left,
+      index
+    };
   }
 
   private parseInfixExpression(left: Expression): InfixExpression {
