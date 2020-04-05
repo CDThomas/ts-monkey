@@ -350,6 +350,20 @@ describe("evaluating", () => {
         `,
         expected: 17,
         description: "uses environment from when function is defined"
+      },
+      {
+        input: `
+        let factorial = fn(n) {
+          if (n == 0) {
+            1
+          } else {
+            n * factorial(n - 1)
+          }
+        };
+        factorial(5);
+        `,
+        expected: 120,
+        description: "recursion"
       }
     ];
 

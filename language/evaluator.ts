@@ -70,10 +70,17 @@ export function evaluate(node: Node, environment: Environment): Obj {
       return new Integer(node.value);
     case ASTKind.Let: {
       const value = evaluate(node.value, environment);
+
       if (isError(value)) {
         return value;
       }
+
+      if (value instanceof Func) {
+        value.environment.set(node.name.value, value);
+      }
+
       environment.set(node.name.value, value);
+
       return NULL;
     }
     case ASTKind.Identifier:
