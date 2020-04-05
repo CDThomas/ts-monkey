@@ -1,4 +1,4 @@
-import { Builtin, Err, Integer, Obj, Str } from "./object";
+import { Arr, Builtin, Err, Integer, Obj, Str } from "./object";
 
 export const builtins: { [key: string]: Builtin } = {
   len: new Builtin(
@@ -11,13 +11,15 @@ export const builtins: { [key: string]: Builtin } = {
 
       const arg = args[0];
 
-      if (!(arg instanceof Str)) {
-        return new Err(
-          `argument to \`len\` not supported. got ${arg.inspect()}`
-        );
+      if (arg instanceof Str) {
+        return new Integer(arg.value.length);
       }
 
-      return new Integer(arg.value.length);
+      if (arg instanceof Arr) {
+        return new Integer(arg.elements.length);
+      }
+
+      return new Err(`argument to \`len\` not supported. got ${arg.inspect()}`);
     }
   )
 };

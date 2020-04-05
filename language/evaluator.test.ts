@@ -557,6 +557,24 @@ describe("evaluating", () => {
         expect((result as Integer).value).toBe(4);
       });
 
+      test("empty array returns 0", () => {
+        const input = "len([])";
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(0);
+      });
+
+      test("non-empty array returns the correct length", () => {
+        const input = "len([1, 2, 3])";
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(3);
+      });
+
       test("returns an error given an argument of the wrong type", () => {
         const input = "len(1)";
 
