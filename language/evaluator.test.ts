@@ -557,6 +557,24 @@ describe("evaluating", () => {
         expect((result as Integer).value).toBe(4);
       });
 
+      test("empty array returns 0", () => {
+        const input = "len([])";
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(0);
+      });
+
+      test("non-empty array returns the correct length", () => {
+        const input = "len([1, 2, 3])";
+
+        const result = doEval(input);
+
+        expect(result).toBeInstanceOf(Integer);
+        expect((result as Integer).value).toBe(3);
+      });
+
       test("returns an error given an argument of the wrong type", () => {
         const input = "len(1)";
 
@@ -578,6 +596,187 @@ describe("evaluating", () => {
           "wrong number of arguments. expected 1, got 2"
         );
       });
+    });
+  });
+
+  describe("first", () => {
+    test("returns the first element of a non-empty array", () => {
+      const input = "first([1, 2])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Integer);
+      expect((result as Integer).value).toBe(1);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "first([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "first(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `first` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "first([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
+
+  describe("last", () => {
+    test("returns the last element of a non-empty array", () => {
+      const input = "last([1, 2])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Integer);
+      expect((result as Integer).value).toBe(2);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "last([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "last(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `last` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "last([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
+
+  describe("rest", () => {
+    test("returns all but the first element of an array with more than one element", () => {
+      const input = "rest([1, 2, 3])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([
+        new Integer(2),
+        new Integer(3)
+      ]);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "rest([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an empty array given an array with one element", () => {
+      const input = "rest([1])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([]);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "rest(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `rest` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "rest([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
+
+  describe("push", () => {
+    test("adds the element to the array", () => {
+      const input = "push([1, 2], 3)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([
+        new Integer(1),
+        new Integer(2),
+        new Integer(3)
+      ]);
+    });
+
+    test("adds an element to an empty array", () => {
+      const input = "push([], 1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([new Integer(1)]);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "push(1, 1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "first argument to `push` must be an array. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "push([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 2, got 1"
+      );
     });
   });
 });
