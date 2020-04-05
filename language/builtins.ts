@@ -1,4 +1,5 @@
 import { Arr, Builtin, Err, Integer, Obj, Str } from "./object";
+import { NULL } from "./evaluator";
 
 export const builtins: { [key: string]: Builtin } = {
   len: new Builtin(
@@ -20,6 +21,44 @@ export const builtins: { [key: string]: Builtin } = {
       }
 
       return new Err(`argument to \`len\` not supported. got ${arg.inspect()}`);
+    }
+  ),
+  first: new Builtin(
+    (...args: Obj[]): Obj => {
+      if (args.length !== 1) {
+        return new Err(
+          `wrong number of arguments. expected 1, got ${args.length}`
+        );
+      }
+
+      const arg = args[0];
+
+      if (arg instanceof Arr) {
+        return arg.elements[0] || NULL;
+      }
+
+      return new Err(
+        `argument to \`first\` not supported. got ${arg.inspect()}`
+      );
+    }
+  ),
+  last: new Builtin(
+    (...args: Obj[]): Obj => {
+      if (args.length !== 1) {
+        return new Err(
+          `wrong number of arguments. expected 1, got ${args.length}`
+        );
+      }
+
+      const arg = args[0];
+
+      if (arg instanceof Arr) {
+        return arg.elements[arg.elements.length - 1] || NULL;
+      }
+
+      return new Err(
+        `argument to \`last\` not supported. got ${arg.inspect()}`
+      );
     }
   )
 };

@@ -598,4 +598,86 @@ describe("evaluating", () => {
       });
     });
   });
+
+  describe("first", () => {
+    test("returns the first element of a non-empty array", () => {
+      const input = "first([1, 2])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Integer);
+      expect((result as Integer).value).toBe(1);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "first([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "first(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `first` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "first([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
+
+  describe("last", () => {
+    test("returns the last element of a non-empty array", () => {
+      const input = "last([1, 2])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Integer);
+      expect((result as Integer).value).toBe(2);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "last([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "last(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `last` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "last([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
 });

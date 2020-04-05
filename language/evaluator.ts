@@ -27,7 +27,7 @@ import {
 
 const TRUE = new Bool(true);
 const FALSE = new Bool(false);
-const NULL = new Null();
+export const NULL = new Null();
 
 export function evaluate(node: Node, environment: Environment): Obj {
   switch (node.kind) {
