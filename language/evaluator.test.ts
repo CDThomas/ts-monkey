@@ -702,12 +702,13 @@ describe("evaluating", () => {
       expect(result).toBeInstanceOf(Null);
     });
 
-    test("returns NULL given an array with one element", () => {
+    test("returns an empty array given an array with one element", () => {
       const input = "rest([1])";
 
       const result = doEval(input);
 
-      expect(result).toBeInstanceOf(Null);
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([]);
     });
 
     test("returns an error given a type that isn't an array", () => {

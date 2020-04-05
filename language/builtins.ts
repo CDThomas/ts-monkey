@@ -73,7 +73,7 @@ export const builtins: { [key: string]: Builtin } = {
 
       if (arg instanceof Arr) {
         const rest = arg.elements.slice(1, arg.elements.length);
-        return rest.length > 0 ? new Arr(rest) : NULL;
+        return arg.elements.length > 0 ? new Arr(rest) : NULL;
       }
 
       return new Err(
