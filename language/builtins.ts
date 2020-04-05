@@ -60,5 +60,25 @@ export const builtins: { [key: string]: Builtin } = {
         `argument to \`last\` not supported. got ${arg.inspect()}`
       );
     }
+  ),
+  rest: new Builtin(
+    (...args: Obj[]): Obj => {
+      if (args.length !== 1) {
+        return new Err(
+          `wrong number of arguments. expected 1, got ${args.length}`
+        );
+      }
+
+      const arg = args[0];
+
+      if (arg instanceof Arr) {
+        const rest = arg.elements.slice(1, arg.elements.length);
+        return rest.length > 0 ? new Arr(rest) : NULL;
+      }
+
+      return new Err(
+        `argument to \`rest\` not supported. got ${arg.inspect()}`
+      );
+    }
   )
 };

@@ -680,4 +680,56 @@ describe("evaluating", () => {
       );
     });
   });
+
+  describe("rest", () => {
+    test("returns all but the first element of an array with more than one element", () => {
+      const input = "rest([1, 2, 3])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([
+        new Integer(2),
+        new Integer(3)
+      ]);
+    });
+
+    test("returns NULL given an empty array", () => {
+      const input = "rest([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns NULL given an array with one element", () => {
+      const input = "rest([1])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "rest(1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "argument to `rest` not supported. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "rest([], [])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 1, got 2"
+      );
+    });
+  });
 });
