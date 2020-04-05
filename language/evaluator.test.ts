@@ -732,4 +732,50 @@ describe("evaluating", () => {
       );
     });
   });
+
+  describe("push", () => {
+    test("adds the element to the array", () => {
+      const input = "push([1, 2], 3)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([
+        new Integer(1),
+        new Integer(2),
+        new Integer(3)
+      ]);
+    });
+
+    test("adds an element to an empty array", () => {
+      const input = "push([], 1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Arr);
+      expect((result as Arr).elements).toEqual([new Integer(1)]);
+    });
+
+    test("returns an error given a type that isn't an array", () => {
+      const input = "push(1, 1)";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "first argument to `push` must be an array. got 1"
+      );
+    });
+
+    test("returns an error given the wrong number of arguments", () => {
+      const input = "push([])";
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Err);
+      expect((result as Err).message).toBe(
+        "wrong number of arguments. expected 2, got 1"
+      );
+    });
+  });
 });

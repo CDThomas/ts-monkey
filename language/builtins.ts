@@ -80,5 +80,24 @@ export const builtins: { [key: string]: Builtin } = {
         `argument to \`rest\` not supported. got ${arg.inspect()}`
       );
     }
+  ),
+  push: new Builtin(
+    (...args: Obj[]): Obj => {
+      if (args.length !== 2) {
+        return new Err(
+          `wrong number of arguments. expected 2, got ${args.length}`
+        );
+      }
+
+      const [array, element] = args;
+
+      if (array instanceof Arr) {
+        return new Arr([...array.elements, element]);
+      }
+
+      return new Err(
+        `first argument to \`push\` must be an array. got ${array.inspect()}`
+      );
+    }
   )
 };
