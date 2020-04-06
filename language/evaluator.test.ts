@@ -7,6 +7,9 @@ import {
   Environment,
   Err,
   Func,
+  Hash,
+  HashKey,
+  HashPair,
   Integer,
   Null,
   Obj,
@@ -372,6 +375,73 @@ describe("evaluating", () => {
         const result = doEval(input);
         expect(result).toBeInstanceOf(Integer);
         expect((result as Integer).value).toBe(expected);
+      });
+    });
+  });
+
+  describe("hashes", () => {
+    test("literals", () => {
+      const input = `
+      let two = "two";
+      {
+        "one": 10 - 9,
+        two: 1 + 1,
+        "thr" + "ee": 6 / 2,
+        4: 4,
+        true: 5,
+        false: 6
+      }
+      `;
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Hash);
+      expect((result as Hash).pairs).toEqual(
+        new Map<HashKey, HashPair>([
+          ["one", { key: new Str("one"), value: new Integer(1) }],
+          ["two", { key: new Str("two"), value: new Integer(2) }],
+          ["three", { key: new Str("three"), value: new Integer(3) }],
+          [4, { key: new Integer(4), value: new Integer(4) }],
+          [true, { key: new Bool(true), value: new Integer(5) }],
+          [false, { key: new Bool(false), value: new Integer(6) }]
+        ])
+      );
+    });
+
+    describe("index expressions", () => {
+      const cases = [
+        {
+          input: '{"foo": 5}["foo"]',
+          expected: 5,
+          description: "string key that exists"
+        },
+        {
+          input: '{"foo": 5}["bar"]',
+          expected: null,
+          description: "string key that doesn't exist"
+        },
+        {
+          input: 'let key = "foo"; {"foo": 5}[key]',
+          expected: 5,
+          description: "identifier as key"
+        },
+        { input: '{}["foo"]', expected: null, description: "on an empty hash" },
+        { input: "{5: 5}[5]", expected: 5, description: "integer as key" },
+        { input: "{true: 5}[true]", expected: 5, description: "true as key" },
+        { input: "{false: 5}[false]", expected: 5, description: "false as key" }
+      ];
+
+      cases.forEach(({ input, expected, description }) => {
+        test(description, () => {
+          expect.assertions(1);
+          const result = doEval(input);
+
+          if (expected) {
+            expect(result).toEqual(new Integer(expected));
+          } else {
+            expect(result).toEqual(new Null());
+          }
+        });
       });
     });
   });

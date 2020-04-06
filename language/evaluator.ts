@@ -3,12 +3,13 @@ import clone from "clone";
 import {
   ArrayLiteral,
   ASTKind,
-  IfExpression,
-  Node,
-  Statement,
-  Identifier,
   Expression,
-  IndexExpression
+  HashLiteral,
+  Identifier,
+  IfExpression,
+  IndexExpression,
+  Node,
+  Statement
 } from "./ast";
 import { builtins } from "./builtins";
 import {
@@ -22,7 +23,8 @@ import {
   Obj,
   ReturnValue,
   Str,
-  Builtin
+  Builtin,
+  Hash
 } from "./object";
 
 const TRUE = new Bool(true);
@@ -55,6 +57,8 @@ export function evaluate(node: Node, environment: Environment): Obj {
       return evaluate(node.expression, environment);
     case ASTKind.FunctionLiteral:
       return new Func(node.parameters, node.body, clone(environment));
+    case ASTKind.HashLiteral:
+      return evalHashLiteral(node, environment);
     case ASTKind.IndexExpression:
       return evalIndexExpression(node, environment);
     case ASTKind.InfixExpression: {
@@ -116,6 +120,37 @@ function evalArrayLiteral(
   }
 
   return new Arr(elements);
+}
+
+function evalHashLiteral(
+  node: HashLiteral,
+  environment: Environment
+): Hash | Err {
+  const hash = new Hash();
+
+  for (const [keyExpression, valueExpression] of node.pairs) {
+    const key = evaluate(keyExpression, environment);
+    if (isError(key)) {
+      return key;
+    }
+
+    const value = evaluate(valueExpression, environment);
+    if (isError(value)) {
+      return value;
+    }
+
+    if (
+      !(key instanceof Str || key instanceof Integer || key instanceof Bool)
+    ) {
+      return new Err(`unusable as hash key: ${key.inspect()}`);
+    }
+
+    const hashPair = { key, value };
+
+    hash.pairs.set(key.value, hashPair);
+  }
+
+  return hash;
 }
 
 function evalIfExpression(node: IfExpression, environment: Environment): Obj {
@@ -273,13 +308,31 @@ function evalIndexExpression(
   }
 
   if (left instanceof Arr && index instanceof Integer) {
-    const value = left.elements[index.value];
-    return value || NULL;
+    return evalArrayIndexExpression(left, index);
+  }
+
+  if (left instanceof Hash) {
+    return evalHashIndexExpression(left, index);
   }
 
   return new Err(
     `index operator not supported: ${left.inspect()}[${index.inspect()}]`
   );
+}
+
+function evalArrayIndexExpression(left: Arr, index: Integer): Obj {
+  const value = left.elements[index.value];
+  return value || NULL;
+}
+
+function evalHashIndexExpression(left: Hash, index: Obj): Obj {
+  if (
+    !(index instanceof Str || index instanceof Integer || index instanceof Bool)
+  ) {
+    return new Err(`unusable as hash key: ${index.inspect()}`);
+  }
+
+  return left.pairs.get(index.value)?.value || NULL;
 }
 
 function evalExpressions(
