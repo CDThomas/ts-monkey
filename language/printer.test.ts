@@ -15,7 +15,8 @@ import {
   PrefixExpression,
   Program,
   ReturnStatment,
-  Str
+  Str,
+  HashLiteral
 } from "./ast";
 import { print } from "./printer";
 
@@ -195,6 +196,47 @@ describe("printing", () => {
     };
 
     expect(print(node)).toBe("fn() {\n  1;\n}");
+  });
+
+  test("hash literals that are empty", () => {
+    const node: HashLiteral = {
+      kind: ASTKind.HashLiteral,
+      pairs: new Map()
+    };
+
+    expect(print(node)).toBe("{}");
+  });
+
+  test("hash literals with one key/value pair", () => {
+    const node: HashLiteral = {
+      kind: ASTKind.HashLiteral,
+      pairs: new Map([
+        [
+          { kind: ASTKind.String, value: "foo" },
+          { kind: ASTKind.String, value: "bar" }
+        ]
+      ])
+    };
+
+    expect(print(node)).toBe('{"foo": "bar"}');
+  });
+
+  test("hash literals with multiple key/value pairs", () => {
+    const node: HashLiteral = {
+      kind: ASTKind.HashLiteral,
+      pairs: new Map([
+        [
+          { kind: ASTKind.String, value: "foo" },
+          { kind: ASTKind.Integer, value: 1 }
+        ],
+        [
+          { kind: ASTKind.String, value: "bar" },
+          { kind: ASTKind.Integer, value: 2 }
+        ]
+      ])
+    };
+
+    expect(print(node)).toBe('{"foo": 1, "bar": 2}');
   });
 
   test("identifiers", () => {
