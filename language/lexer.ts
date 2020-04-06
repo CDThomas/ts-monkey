@@ -68,6 +68,9 @@ export default class Lexer {
       case ";":
         token = this.newToken(TokenKind.Semicolon, this.ch);
         break;
+      case ":":
+        token = this.newToken(TokenKind.Colon, this.ch);
+        break;
       case "(":
         token = this.newToken(TokenKind.LParen, this.ch);
         break;
