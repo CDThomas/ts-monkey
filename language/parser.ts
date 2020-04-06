@@ -7,6 +7,7 @@ import {
   Expression,
   ExpressionStatement,
   FunctionLiteral,
+  HashLiteral,
   Identifier,
   IfExpression,
   IndexExpression,
@@ -16,8 +17,8 @@ import {
   PrefixExpression,
   Program,
   ReturnStatment,
-  Str,
-  Statement
+  Statement,
+  Str
 } from "./ast";
 import Lexer from "./lexer";
 import { Token, TokenKind } from "./token";
@@ -65,6 +66,7 @@ class Parser {
     this.parseBool = this.parseBool.bind(this);
     this.parseCallExpression = this.parseCallExpression.bind(this);
     this.parseFunctionLiteral = this.parseFunctionLiteral.bind(this);
+    this.parseHashLiteral = this.parseHashLiteral.bind(this);
     this.parseIdentifier = this.parseIdentifier.bind(this);
     this.parseIfExpression = this.parseIfExpression.bind(this);
     this.parseIndexExpression = this.parseIndexExpression.bind(this);
@@ -78,6 +80,7 @@ class Parser {
       [TokenKind.Bang]: this.parsePrefixExpression,
       [TokenKind.False]: this.parseBool,
       [TokenKind.Function]: this.parseFunctionLiteral,
+      [TokenKind.LBrace]: this.parseHashLiteral,
       [TokenKind.Ident]: this.parseIdentifier,
       [TokenKind.If]: this.parseIfExpression,
       [TokenKind.Integer]: this.parseInteger,
@@ -363,6 +366,34 @@ class Parser {
     this.expectPeek(TokenKind.RParen);
 
     return parameters;
+  }
+
+  private parseHashLiteral(): HashLiteral {
+    const pairs = new Map();
+
+    while (!this.peekTokenIs(TokenKind.RBrace)) {
+      this.nextToken();
+
+      const key = this.parseExpression(Precedence.Lowest);
+
+      this.expectPeek(TokenKind.Colon);
+      this.nextToken();
+
+      const value = this.parseExpression(Precedence.Lowest);
+
+      pairs.set(key, value);
+
+      if (!this.peekTokenIs(TokenKind.RBrace)) {
+        this.expectPeek(TokenKind.Comma);
+      }
+    }
+
+    this.expectPeek(TokenKind.RBrace);
+
+    return {
+      kind: ASTKind.HashLiteral,
+      pairs
+    };
   }
 
   private parseIfExpression(): IfExpression {

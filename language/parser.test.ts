@@ -540,6 +540,42 @@ describe("parsing", () => {
     });
   });
 
+  describe("hash literals", () => {
+    const cases = [
+      {
+        input: '{"one": 1, "two": 2, "three": 3}',
+        description: "string keys"
+      },
+      {
+        input: '{1: "one", 2: "two", 3: "three"}',
+        description: "integer keys"
+      },
+      {
+        input: "{true: 1, false: 0}",
+        description: "boolean keys"
+      },
+      {
+        input: "{one: 2 + 2}",
+        description: "expressions as key and value"
+      },
+      {
+        input: '{1: "one", "two": 2, true: false}',
+        description: "mixed keys and values"
+      },
+      {
+        input: "{}",
+        description: "empty"
+      }
+    ];
+
+    cases.forEach(({ input, description }) => {
+      test(`${description}: ${input}`, () => {
+        const AST = parse(input);
+        expect(AST).toMatchSnapshot();
+      });
+    });
+  });
+
   describe("operator precedence", () => {
     const cases = [
       {
