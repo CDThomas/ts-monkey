@@ -5,6 +5,7 @@ export enum ASTKind {
   CallExpression = "CALL_EXPRESSION",
   ExpressionStatement = "EXPRESSION",
   FunctionLiteral = "FUNCTION_LITERAL",
+  HashLiteral = "HASH_LITERAL",
   Identifier = "IDENTIFIER",
   IfExpression = "IF_EXPRESSION",
   IndexExpression = "INDEX_EXPRESSION",
@@ -30,6 +31,7 @@ export type Expression =
   | Bool
   | CallExpression
   | FunctionLiteral
+  | HashLiteral
   | Identifier
   | IndexExpression
   | IfExpression
@@ -88,6 +90,11 @@ export type FunctionLiteral = {
   kind: ASTKind.FunctionLiteral;
   parameters: Identifier[];
   body: BlockStatement;
+};
+
+export type HashLiteral = {
+  kind: ASTKind.HashLiteral;
+  pairs: Map<Expression, Expression>;
 };
 
 export type Identifier = {
