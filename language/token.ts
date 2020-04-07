@@ -24,6 +24,7 @@ export enum TokenKind {
   // Delimiters
   Comma = ",",
   Semicolon = ";",
+  Colon = ":",
   LParen = "(",
   RParen = ")",
   LBrace = "{",

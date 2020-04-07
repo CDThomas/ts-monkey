@@ -135,6 +135,193 @@ Object {
 }
 `;
 
+exports[`parsing hash literals boolean keys: {true: 1, false: 0} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {
+          Object {
+            "kind": "BOOL",
+            "value": true,
+          } => Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+          Object {
+            "kind": "BOOL",
+            "value": false,
+          } => Object {
+            "kind": "INTEGER",
+            "value": 0,
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing hash literals empty: {} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {},
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing hash literals expressions as key and value: {one: 2 + 2} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {
+          Object {
+            "kind": "IDENTIFIER",
+            "value": "one",
+          } => Object {
+            "kind": "INFIX_EXPRESSION",
+            "left": Object {
+              "kind": "INTEGER",
+              "value": 2,
+            },
+            "operator": "+",
+            "right": Object {
+              "kind": "INTEGER",
+              "value": 2,
+            },
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing hash literals integer keys: {1: "one", 2: "two", 3: "three"} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          } => Object {
+            "kind": "STRING",
+            "value": "one",
+          },
+          Object {
+            "kind": "INTEGER",
+            "value": 2,
+          } => Object {
+            "kind": "STRING",
+            "value": "two",
+          },
+          Object {
+            "kind": "INTEGER",
+            "value": 3,
+          } => Object {
+            "kind": "STRING",
+            "value": "three",
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing hash literals mixed keys and values: {1: "one", "two": 2, true: false} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {
+          Object {
+            "kind": "INTEGER",
+            "value": 1,
+          } => Object {
+            "kind": "STRING",
+            "value": "one",
+          },
+          Object {
+            "kind": "STRING",
+            "value": "two",
+          } => Object {
+            "kind": "INTEGER",
+            "value": 2,
+          },
+          Object {
+            "kind": "BOOL",
+            "value": true,
+          } => Object {
+            "kind": "BOOL",
+            "value": false,
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
+exports[`parsing hash literals string keys: {"one": 1, "two": 2, "three": 3} 1`] = `
+Object {
+  "kind": "PROGRAM",
+  "statements": Array [
+    Object {
+      "expression": Object {
+        "kind": "HASH_LITERAL",
+        "pairs": Map {
+          Object {
+            "kind": "STRING",
+            "value": "one",
+          } => Object {
+            "kind": "INTEGER",
+            "value": 1,
+          },
+          Object {
+            "kind": "STRING",
+            "value": "two",
+          } => Object {
+            "kind": "INTEGER",
+            "value": 2,
+          },
+          Object {
+            "kind": "STRING",
+            "value": "three",
+          } => Object {
+            "kind": "INTEGER",
+            "value": 3,
+          },
+        },
+      },
+      "kind": "EXPRESSION",
+    },
+  ],
+}
+`;
+
 exports[`parsing infix operators adding integers: 5 + 5 1`] = `
 Object {
   "kind": "PROGRAM",

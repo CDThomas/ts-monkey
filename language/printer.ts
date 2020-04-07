@@ -1,4 +1,4 @@
-import { ASTKind, IfExpression, Node } from "./ast";
+import { ASTKind, HashLiteral, IfExpression, Node } from "./ast";
 
 function print(node: Node): string {
   switch (node.kind) {
@@ -18,10 +18,12 @@ function print(node: Node): string {
       const params = node.parameters.map(print).join(", ");
       return `fn(${params}) {\n  ${print(node.body)}\n}`;
     }
+    case ASTKind.HashLiteral:
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return printHash(node);
     case ASTKind.Identifier:
       return node.value;
     case ASTKind.IfExpression:
-      // printIfExpression must be used before it's defined since print and printIfExpression call each other.
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return printIfExpression(node);
     case ASTKind.IndexExpression:
@@ -55,6 +57,15 @@ function printIfExpression({
   return (
     `if (${print(condition)}) {\n  ${print(consequence)}\n}` + alternativeString
   );
+}
+
+function printHash(node: HashLiteral): string {
+  const pairs = [];
+  for (const [key, value] of node.pairs) {
+    pairs.push(`${print(key)}: ${print(value)}`);
+  }
+
+  return `{${pairs.join(", ")}}`;
 }
 
 export { print };

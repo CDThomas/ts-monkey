@@ -105,6 +105,29 @@ class Func implements Obj {
   }
 }
 
+export type HashKey = string | number | boolean;
+
+export type HashPair = {
+  key: Str | Integer | Bool;
+  value: Obj;
+};
+
+export type HashPairs = Map<HashKey, HashPair>;
+
+class Hash implements Obj {
+  pairs: HashPairs = new Map();
+
+  inspect(): string {
+    const pairs = [];
+
+    for (const { key, value } of this.pairs.values()) {
+      pairs.push(`${key.inspect()}: ${value.inspect()}`);
+    }
+
+    return `{${pairs.join(", ")}}`;
+  }
+}
+
 class Integer implements Obj {
   value: number;
 
@@ -154,6 +177,7 @@ export {
   Environment,
   Err,
   Func,
+  Hash,
   Integer,
   Null,
   ReturnValue,

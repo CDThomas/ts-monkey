@@ -21,6 +21,7 @@ if (5 < 10) {
 "foobar"
 "foo bar"
 [1, 2];
+{"foo": "bar"};
 `;
 
   const tests: [TokenKind, string][] = [
@@ -104,6 +105,12 @@ if (5 < 10) {
     [TokenKind.Comma, ","],
     [TokenKind.Integer, "2"],
     [TokenKind.RBracket, "]"],
+    [TokenKind.Semicolon, ";"],
+    [TokenKind.LBrace, "{"],
+    [TokenKind.String, "foo"],
+    [TokenKind.Colon, ":"],
+    [TokenKind.String, "bar"],
+    [TokenKind.RBrace, "}"],
     [TokenKind.Semicolon, ";"],
     [TokenKind.EOF, ""]
   ];
