@@ -1,12 +1,10 @@
-import dynamic from "next/dynamic";
 import { useState } from "react";
+import JSONTree from "react-json-tree";
 
 import Tab from "../components/Tab";
 import { Program } from "../language/ast";
 import { evaluate } from "../language/evaluator";
 import { Environment, Err } from "../language/object";
-
-const Editor = dynamic(import("../components/Editor"), { ssr: false });
 
 enum TabName {
   AST = "AST",
@@ -18,7 +16,7 @@ type Props = {
 };
 
 export default function RightPane({ output }: Props): React.ReactElement {
-  const [tab, setTab] = useState<TabName>(TabName.AST);
+  const [tab, setTab] = useState<TabName>(TabName.Eval);
   let evaluated = null;
 
   try {
@@ -76,16 +74,43 @@ export default function RightPane({ output }: Props): React.ReactElement {
               top: 0,
               bottom: 0,
               left: 0,
-              right: 0
+              right: 0,
+              paddingLeft: 12,
+              overflowY: "scroll"
             }}
           >
             {tab === TabName.AST && (
-              <Editor readOnly value={JSON.stringify(output, null, 2)} />
+              <JSONTree
+                data={output}
+                theme={{
+                  scheme: "default",
+                  author: "chris kempson (http://chriskempson.com)",
+                  base00: "#181818",
+                  base01: "#282828",
+                  base02: "#383838",
+                  base03: "#585858",
+                  base04: "#b8b8b8",
+                  base05: "#d8d8d8",
+                  base06: "#e8e8e8",
+                  base07: "#f8f8f8",
+                  base08: "#ab4642",
+                  base09: "#dc9656",
+                  base0A: "#f7ca88",
+                  base0B: "#a1b56c",
+                  base0C: "#86c1b9",
+                  base0D: "#7cafc2",
+                  base0E: "#ba8baf",
+                  base0F: "#a16946"
+                }}
+                shouldExpandNode={(_keyname, _data, level): boolean =>
+                  level < 2
+                }
+              />
             )}
             {tab === TabName.Eval && (
               <div
                 style={{
-                  padding: 8,
+                  paddingTop: 12,
                   fontFamily: "monospace",
                   fontSize: 16,
                   color: evaluated instanceof Err ? "#C41A16" : "inherit"
