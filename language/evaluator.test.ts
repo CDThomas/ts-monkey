@@ -13,7 +13,7 @@ import {
   Integer,
   Null,
   Obj,
-  Str
+  Str,
 } from "./object";
 import { ASTKind } from "./ast";
 
@@ -31,32 +31,32 @@ describe("evaluating", () => {
       {
         input: "if (true) { 10 }",
         expected: 10,
-        description: "literal true condition"
+        description: "literal true condition",
       },
       {
         input: "if (false) { 10 }",
-        description: "literal false condition"
+        description: "literal false condition",
       },
       { input: "if (1) { 10 }", expected: 10, description: "truthy condition" },
       {
         input: "if (1 < 2) { 10 }",
         expected: 10,
-        description: "condition expression that evaluates to true"
+        description: "condition expression that evaluates to true",
       },
       {
         input: "if (1 > 2) { 10 }",
-        description: "condition expression that evaluates to false"
+        description: "condition expression that evaluates to false",
       },
       {
         input: "if (1 < 2) { 10 } else { 20 }",
         expected: 10,
-        description: "true condition with alternative"
+        description: "true condition with alternative",
       },
       {
         input: "if (1 > 2) { 10 } else { 20 }",
         expected: 20,
-        description: "false condition with alternative"
-      }
+        description: "false condition with alternative",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -94,7 +94,7 @@ describe("evaluating", () => {
       { input: "2 * (5 + 10)", expected: 30 },
       { input: "3 * 3 * 3 + 10", expected: 37 },
       { input: "3 * (3 * 3) + 10", expected: 37 },
-      { input: "(5 + 10 * 2 + 15 / 3) * 2 + -10", expected: 50 }
+      { input: "(5 + 10 * 2 + 15 / 3) * 2 + -10", expected: 50 },
     ];
 
     cases.forEach(({ input, expected }) => {
@@ -152,7 +152,7 @@ describe("evaluating", () => {
       { input: "(1 < 2) == true", expected: true },
       { input: "(1 < 2) == false", expected: false },
       { input: "(1 > 2) == true", expected: false },
-      { input: "(1 > 2) == false", expected: true }
+      { input: "(1 > 2) == false", expected: true },
     ];
 
     cases.forEach(({ input, expected }) => {
@@ -173,7 +173,7 @@ describe("evaluating", () => {
       expect((result as Arr).elements).toEqual([
         new Integer(1),
         new Integer(4),
-        new Integer(6)
+        new Integer(6),
       ]);
     });
 
@@ -185,34 +185,34 @@ describe("evaluating", () => {
         {
           input: "let i = 0; [1][i]",
           expected: 1,
-          description: "identifier as index"
+          description: "identifier as index",
         },
         {
           input: "[1, 2, 3][1 + 1]",
           expected: 3,
-          description: "arithmetic in index expression"
+          description: "arithmetic in index expression",
         },
         {
           input: "let myArray = [1, 2, 3]; myArray[2]",
           expected: 3,
-          description: "identifier as left side"
+          description: "identifier as left side",
         },
         {
           input:
             "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
           expected: 6,
-          description: "used in an expression"
+          description: "used in an expression",
         },
         {
           input: "[1, 2, 3][3]",
           expected: null,
-          description: "positive out-of-bounds index"
+          description: "positive out-of-bounds index",
         },
         {
           input: "[1, 2, 3][-1]",
           expected: null,
-          description: "negative out-of-bounds index"
-        }
+          description: "negative out-of-bounds index",
+        },
       ];
 
       cases.forEach(({ input, expected, description }) => {
@@ -235,33 +235,33 @@ describe("evaluating", () => {
       {
         input: "!true",
         expected: false,
-        description: "negating true evaluates to false"
+        description: "negating true evaluates to false",
       },
       {
         input: "!false",
         expected: true,
-        description: "negating false evalutes to true"
+        description: "negating false evalutes to true",
       },
       {
         input: "!5",
         expected: false,
-        description: "negating an int coerces and evaluates to false"
+        description: "negating an int coerces and evaluates to false",
       },
       {
         input: "!!true",
         expected: true,
-        description: "double negating true evaluates to true"
+        description: "double negating true evaluates to true",
       },
       {
         input: "!!false",
         expected: false,
-        description: "double negating false evaluates to false"
+        description: "double negating false evaluates to false",
       },
       {
         input: "!!5",
         expected: true,
-        description: "double negating an int coerces and evaluates to true"
-      }
+        description: "double negating an int coerces and evaluates to true",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -282,7 +282,7 @@ describe("evaluating", () => {
 
     test("sets the correct parameters", () => {
       expect(evaluated.parameters).toEqual([
-        { kind: ASTKind.Identifier, value: "x" }
+        { kind: ASTKind.Identifier, value: "x" },
       ]);
     });
 
@@ -296,10 +296,10 @@ describe("evaluating", () => {
               kind: ASTKind.InfixExpression,
               operator: "+",
               left: { kind: ASTKind.Identifier, value: "x" },
-              right: { kind: ASTKind.Integer, value: 2 }
-            }
-          }
-        ]
+              right: { kind: ASTKind.Integer, value: 2 },
+            },
+          },
+        ],
       });
     });
 
@@ -313,32 +313,32 @@ describe("evaluating", () => {
       {
         input: "let identity = fn(x) { x; }; identity(5);",
         expected: 5,
-        description: "implicit return value"
+        description: "implicit return value",
       },
       {
         input: "let identity = fn(x) { return x; }; identity(5);",
         expected: 5,
-        description: "explicit return value"
+        description: "explicit return value",
       },
       {
         input: "let double = fn(x) { x * 2; }; double(5);",
         expected: 10,
-        description: "using parameters in expressions"
+        description: "using parameters in expressions",
       },
       {
         input: "let add = fn(x, y) { x + y; }; add(5, 5);",
         expected: 10,
-        description: "multiple parameters"
+        description: "multiple parameters",
       },
       {
         input: "let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));",
         expected: 20,
-        description: "evaluating arguments before calling"
+        description: "evaluating arguments before calling",
       },
       {
         input: "fn(x) { x; }(5)",
         expected: 5,
-        description: "calling a function literal"
+        description: "calling a function literal",
       },
       {
         input: `
@@ -352,7 +352,7 @@ describe("evaluating", () => {
         result;
         `,
         expected: 17,
-        description: "uses environment from when function is defined"
+        description: "uses environment from when function is defined",
       },
       {
         input: `
@@ -366,8 +366,8 @@ describe("evaluating", () => {
         factorial(5);
         `,
         expected: 120,
-        description: "recursion"
-      }
+        description: "recursion",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -403,7 +403,7 @@ describe("evaluating", () => {
           ["three", { key: new Str("three"), value: new Integer(3) }],
           [4, { key: new Integer(4), value: new Integer(4) }],
           [true, { key: new Bool(true), value: new Integer(5) }],
-          [false, { key: new Bool(false), value: new Integer(6) }]
+          [false, { key: new Bool(false), value: new Integer(6) }],
         ])
       );
     });
@@ -413,22 +413,26 @@ describe("evaluating", () => {
         {
           input: '{"foo": 5}["foo"]',
           expected: 5,
-          description: "string key that exists"
+          description: "string key that exists",
         },
         {
           input: '{"foo": 5}["bar"]',
           expected: null,
-          description: "string key that doesn't exist"
+          description: "string key that doesn't exist",
         },
         {
           input: 'let key = "foo"; {"foo": 5}[key]',
           expected: 5,
-          description: "identifier as key"
+          description: "identifier as key",
         },
         { input: '{}["foo"]', expected: null, description: "on an empty hash" },
         { input: "{5: 5}[5]", expected: 5, description: "integer as key" },
         { input: "{true: 5}[true]", expected: 5, description: "true as key" },
-        { input: "{false: 5}[false]", expected: 5, description: "false as key" }
+        {
+          input: "{false: 5}[false]",
+          expected: 5,
+          description: "false as key",
+        },
       ];
 
       cases.forEach(({ input, expected, description }) => {
@@ -451,23 +455,23 @@ describe("evaluating", () => {
       {
         input: "let a = 5; a;",
         expected: 5,
-        description: "assigning an integer literal"
+        description: "assigning an integer literal",
       },
       {
         input: "let a = 5 * 5; a;",
         expected: 25,
-        description: "assigning an infix expression"
+        description: "assigning an infix expression",
       },
       {
         input: "let a = 5; let b = a; a;",
         expected: 5,
-        description: "assigning the value of another identifier"
+        description: "assigning the value of another identifier",
       },
       {
         input: "let a = 5; let b = a; let c = a + b + 5; c;",
         expected: 15,
-        description: "assigning an expression using multiple identifiers"
-      }
+        description: "assigning an expression using multiple identifiers",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -485,17 +489,17 @@ describe("evaluating", () => {
       {
         input: "return 10; 9;",
         expected: 10,
-        description: "return before another statement"
+        description: "return before another statement",
       },
       {
         input: "return 2 * 5; 9;",
         expected: 10,
-        description: "returning an expression"
+        description: "returning an expression",
       },
       {
         input: "9; return 2 * 5; 9;",
         expected: 10,
-        description: "return between two other statements"
+        description: "return between two other statements",
       },
       {
         input: `
@@ -508,8 +512,8 @@ describe("evaluating", () => {
           }
         `,
         expected: 10,
-        description: "returning in a nested block statement"
-      }
+        description: "returning in a nested block statement",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -526,32 +530,32 @@ describe("evaluating", () => {
       {
         input: "5 + true;",
         expected: "type mismatch: 5 + true",
-        description: "type mismatch"
+        description: "type mismatch",
       },
       {
         input: "5 + true; 5;",
         expected: "type mismatch: 5 + true",
-        description: "an error before another statement"
+        description: "an error before another statement",
       },
       {
         input: "-true",
         expected: "unknown operator: -true",
-        description: "unknown operator in a prefix expression"
+        description: "unknown operator in a prefix expression",
       },
       {
         input: "true + false",
         expected: "unknown operator: true + false",
-        description: "unknown operator in an infix expression"
+        description: "unknown operator in an infix expression",
       },
       {
         input: "5; true + false; 5;",
         expected: "unknown operator: true + false",
-        description: "an error between other statements"
+        description: "an error between other statements",
       },
       {
         input: "if (10 > 1) { true + false; }",
         expected: "unknown operator: true + false",
-        description: "an error in a block statement"
+        description: "an error in a block statement",
       },
       {
         input: `
@@ -564,7 +568,7 @@ describe("evaluating", () => {
           }
         `,
         expected: "unknown operator: true + false",
-        description: "an error in return in a nested block statement"
+        description: "an error in return in a nested block statement",
       },
       {
         input: `
@@ -578,38 +582,63 @@ describe("evaluating", () => {
           }
         `,
         expected: "unknown operator: true + false",
-        description: "an error before a return in a nested block statement"
+        description: "an error before a return in a nested block statement",
       },
       {
         input: "foobar",
         expected: "identifier not found: foobar",
-        description: "unbound identifier"
+        description: "unbound identifier",
       },
       {
         input: '"Hello" - "world!"',
         expected: 'unknown operator: "Hello" - "world!"',
-        description: "unknown string infix operator"
+        description: "unknown string infix operator",
       },
       {
         input: "[foo]",
         expected: "identifier not found: foo",
-        description: "an error in an array literal"
+        description: "an error in an array literal",
       },
       {
         input: "foo[1]",
         expected: "identifier not found: foo",
-        description: "an error in left of index operator"
+        description: "an error in left of index operator",
       },
       {
         input: "[1][foo]",
         expected: "identifier not found: foo",
-        description: "an error in index of index operator"
+        description: "an error in index of index operator",
       },
       {
         input: "1[1]",
         expected: "index operator not supported: 1[1]",
-        description: "index operator on unsupported type"
-      }
+        description: "index operator on unsupported type",
+      },
+      {
+        input: "{foo: 1}",
+        expected: "identifier not found: foo",
+        description: "error in hash key",
+      },
+      {
+        input: "{1: foo}",
+        expected: "identifier not found: foo",
+        description: "error in hash value",
+      },
+      {
+        input: '{1: "one"}[foo]',
+        expected: "identifier not found: foo",
+        description: "error in hash index expression",
+      },
+      {
+        input: "{[]: 1}",
+        expected: "unusable as hash key: []",
+        description: "invalid hash key",
+      },
+      {
+        input: '{1: "one"}[[]]',
+        expected: "unusable as hash key: []",
+        description: "invalid hash key in index expression",
+      },
     ];
 
     cases.forEach(({ input, expected, description }) => {
@@ -774,7 +803,7 @@ describe("evaluating", () => {
       expect(result).toBeInstanceOf(Arr);
       expect((result as Arr).elements).toEqual([
         new Integer(2),
-        new Integer(3)
+        new Integer(3),
       ]);
     });
 
@@ -828,7 +857,7 @@ describe("evaluating", () => {
       expect((result as Arr).elements).toEqual([
         new Integer(1),
         new Integer(2),
-        new Integer(3)
+        new Integer(3),
       ]);
     });
 
