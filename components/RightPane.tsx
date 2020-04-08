@@ -125,7 +125,11 @@ export default function RightPane({ output }: Props): React.ReactElement {
               >
                 {logs.map(
                   (result: string, index: number): React.ReactElement => {
-                    return <div key={index}>{result}</div>;
+                    return (
+                      <div key={index} style={{ marginBottom: 12 }}>
+                        {result}
+                      </div>
+                    );
                   }
                 )}
                 <div
