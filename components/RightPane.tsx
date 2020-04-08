@@ -8,22 +8,30 @@ import { Environment, Err } from "../language/object";
 
 enum TabName {
   AST = "AST",
-  Eval = "Eval"
+  Eval = "Eval",
 }
 
 type Props = {
   output: Program;
 };
 
+function captureLogs<T>(func: () => T): [T, string[]] {
+  const logs: string[] = [];
+  const log = console.log;
+  console.log = (...args: string[]): void => {
+    logs.push(...args);
+  };
+
+  const result = func();
+
+  console.log = log;
+
+  return [result, logs];
+}
+
 export default function RightPane({ output }: Props): React.ReactElement {
   const [tab, setTab] = useState<TabName>(TabName.Eval);
-  let evaluated = null;
-
-  try {
-    evaluated = evaluate(output, new Environment());
-  } catch (error) {
-    console.error(error);
-  }
+  const [result, logs] = captureLogs(() => evaluate(output, new Environment()));
 
   return (
     <div
@@ -32,7 +40,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
         top: 0,
         right: 0,
         bottom: 0,
-        width: "50%"
+        width: "50%",
       }}
     >
       <div
@@ -44,7 +52,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
           right: 0,
           display: "flex",
           flexDirection: "column",
-          paddingLeft: 3
+          paddingLeft: 3,
         }}
       >
         <div
@@ -53,7 +61,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
             borderBottom: "1px solid #ddd",
             height: 32,
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <Tab
@@ -76,7 +84,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
               left: 0,
               right: 0,
               paddingLeft: 12,
-              overflowY: "scroll"
+              overflowY: "scroll",
             }}
           >
             {tab === TabName.AST && (
@@ -100,7 +108,7 @@ export default function RightPane({ output }: Props): React.ReactElement {
                   base0C: "#86c1b9",
                   base0D: "#7cafc2",
                   base0E: "#ba8baf",
-                  base0F: "#a16946"
+                  base0F: "#a16946",
                 }}
                 shouldExpandNode={(_keyname, _data, level): boolean =>
                   level < 2
@@ -113,10 +121,20 @@ export default function RightPane({ output }: Props): React.ReactElement {
                   paddingTop: 12,
                   fontFamily: "monospace",
                   fontSize: 16,
-                  color: evaluated instanceof Err ? "#C41A16" : "inherit"
                 }}
               >
-                {evaluated?.inspect()}
+                {logs.map(
+                  (result: string, index: number): React.ReactElement => {
+                    return <div key={index}>{result}</div>;
+                  }
+                )}
+                <div
+                  style={{
+                    color: result instanceof Err ? "#C41A16" : "inherit",
+                  }}
+                >
+                  {result?.inspect()}
+                </div>
               </div>
             )}
           </div>
