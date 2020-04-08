@@ -892,4 +892,36 @@ describe("evaluating", () => {
       );
     });
   });
+
+  describe("puts", () => {
+    let logMock: jest.Mock;
+    let originalLog: typeof console.log;
+
+    beforeEach(() => {
+      originalLog = console.log;
+      logMock = console.log = jest.fn();
+    });
+
+    afterEach(() => {
+      console.log = originalLog;
+      logMock.mockClear();
+    });
+
+    test("logs input to the console as a string", () => {
+      const input = 'puts("hi", 1, [], true)';
+
+      doEval(input);
+
+      expect(logMock).toHaveBeenCalledWith('"hi"', "1", "[]", "true");
+      expect(logMock).toHaveBeenCalledTimes(1);
+    });
+
+    test("return NULL", () => {
+      const input = 'puts("hi")';
+
+      const result = doEval(input);
+
+      expect(result).toBeInstanceOf(Null);
+    });
+  });
 });

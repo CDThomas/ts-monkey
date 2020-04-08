@@ -1,4 +1,4 @@
-import { Arr, Builtin, Err, Integer, Obj, Str } from "./object";
+import { Arr, Builtin, Err, Integer, Null, Obj, Str } from "./object";
 import { NULL } from "./evaluator";
 
 export const builtins: { [key: string]: Builtin } = {
@@ -99,5 +99,12 @@ export const builtins: { [key: string]: Builtin } = {
         `first argument to \`push\` must be an array. got ${array.inspect()}`
       );
     }
-  )
+  ),
+  puts: new Builtin(
+    (...args: Obj[]): Null => {
+      const inspected = args.map((arg) => arg.inspect());
+      console.log(...inspected);
+      return NULL;
+    }
+  ),
 };
