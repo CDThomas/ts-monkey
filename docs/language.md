@@ -70,7 +70,7 @@ doTwice(3, addOne)
 
 ## Assigning Variables
 
-`let` is used to assign values to an identifier. Values are immutable, but different values can be re-bound to the same identifier.
+`let` is used to assign a value to an identifier. Values are immutable, but different values can be re-bound to the same identifier.
 
 The following code returns `true`:
 
