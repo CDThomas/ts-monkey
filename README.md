@@ -2,6 +2,8 @@
 
 A TypeScript implementation of the [monkey language](https://monkeylang.org/) along with an in-browser editor, interpreter, and AST explorer.
 
+![TS Monkey web editor](./ui.png "ts-monkey web editor")
+
 For details on the Monkey language see the [unofficial docs](docs/language.md) in this repo or [monkeylang.org](https://monkeylang.org/).
 
 ## Structure
