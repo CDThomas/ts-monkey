@@ -9,16 +9,30 @@ import { Program } from "../language/ast";
 import Lexer from "../language/lexer";
 import Parser from "../language/parser";
 
-const defaultInput = `let five = 5;
-let ten = 10;
+const defaultInput = `puts("This is a TypeScript implementation of the Monkey language!")
 
-let add = fn(x, y) {
-  x + y;
-};
+let x = 10 / 2 * 3 + 5 - 5
+let word = "Hi" + "!"
+let bool = !(1 < 2)
 
-let result = add(five, ten);
+puts("Monkey supports integers, strings, and booleans:", x, word, bool)
 
-result;
+let array = [1, 2, 3]
+let hash = {"key": "value"}
+
+puts("Monkey also supports arrays and hashes:", array, hash)
+
+let addOne = fn (x) { x + 1 };
+let doTwice = fn (x, func) {
+  func(func(x))
+}
+
+puts(
+  "You can define your own functions and pass functions as arguments:",
+  doTwice(3, addOne)
+)
+
+puts("For more info, click the '?' (help) link in the top right of the main nav.")
 `;
 
 const parse = (input: string): Program => {
