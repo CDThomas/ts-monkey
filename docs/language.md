@@ -154,9 +154,9 @@ Monkey supports `if`/`else` statements for control flow:
 
 ```js
 if (1 < 2) {
-  ("yep");
+  "yep";
 } else {
-  ("nope");
+  "nope";
 }
 ```
 
